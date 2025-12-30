@@ -1,0 +1,27 @@
+.main-text {
+  font-size: 30px !important;
+  margin-top: -20px;
+}
+
+.main-logo {
+  margin-top: 20px;
+}
+
+.sub-text {
+  font-size: 15px;
+}
+
+.gradient {
+  background: radial-gradient(circle at center,
+      #b8f2ff 0%,
+      #e0c3fc 25%,
+      #f9d1ff 50%,
+      #c2f0fc 75%,
+      #d9faff 100%);
+}
+
+@media only screen and (max-width: 932px) {
+  .right-side {
+    padding-top: 35px;
+  }
+}

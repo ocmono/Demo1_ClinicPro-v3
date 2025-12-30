@@ -1,0 +1,144 @@
+.prescription-view-wrapper {
+background: transparent !important;
+box-shadow: none !important;
+  box-sizing: border-box;
+}
+
+.prescription-view-card {
+/* background-color: #f8f9fa; */
+  border-radius: 8px;
+  
+  padding: 20px;
+  margin-bottom: 24px;
+  margin-top: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.prescription-view-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.prescription-view-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.prescription-view-table th,
+.prescription-view-table td {
+  border: 1px solid #e0e0e0;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.prescription-view-notes {
+  font-size: 14px;
+  background: #f9f9f9;
+  padding: 1rem;
+  border-left: 4px solid #4f46e5;
+}
+
+.prescription-view-wrapper {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 1000px;
+  margin: 0 auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.prescription-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.prescription-view-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.prescription-view-actions .prescription-icon {
+  font-size: 1.25rem;
+  margin-left: 1rem;
+  cursor: pointer;
+  /* color: #4f46e5; */
+}
+
+.prescription-divider {
+  border: none;
+  border-top: 1px dashed #ccc;
+  margin: 1.5rem 0;
+}
+
+.prescription-meta {
+  margin-bottom: 1rem;
+}
+
+.prescription-info-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.prescription-info-box {
+  flex: 1;
+  min-width: 250px;
+}
+
+.prescription-info-box h4 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.prescription-medicine-table h4 {
+  margin-bottom: 1rem;
+}
+
+.prescription-medicine-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.prescription-medicine-table th,
+.prescription-medicine-table td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.prescription-medicine-table th {
+  background: #7ab8f59c;
+  font-weight: 600;
+}
+
+.prescription-footer-note {
+  margin-top: 2rem;
+  padding: 1rem;
+  /* background-color: #fef3c7; */
+  border-left: 4px solid #facc15;
+  font-size: 0.95rem;
+  border-radius: 5px;
+}
+.print-mode .prescription-view-card,
+.print-mode .prescription-view-card * {
+  box-shadow: none !important;
+}
+@media print {
+  .no-print {
+    display: none !important;
+  }
+.prescription-view-card,
+.prescription-view-card * {
+  box-shadow: none !important;
+}
+
+/* Ensure no other elements have shadows in print */
+* {
+  box-shadow: none !important;
+}
+}
+

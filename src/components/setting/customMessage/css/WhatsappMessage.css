@@ -1,0 +1,116 @@
+/* WhatsappMessage.css */
+
+.whatsapp-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* .whatsapp-card hr {
+  margin: 0.5rem 0;
+  border: 0;
+  border-top: 1px solid #f0f2f5;
+} */
+
+.whatsapp-card-inner {
+  padding: 0 1rem 1rem;
+}
+
+.whatsapp-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.whatsapp-input-group .form-control {
+  flex: 1;
+  border: 1px solid #e9edef;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 14px;
+  transition: all 0.3s;
+  background-color: #f8f9fa;
+}
+
+.whatsapp-input-group .form-control:focus {
+  outline: none;
+  border-color: #25d366;
+  box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.2);
+  background-color: #ffffff;
+}
+
+.whatsapp-send-btn {
+  background-color: #25d366;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.whatsapp-send-btn:hover {
+  background-color: #128c7e;
+  transform: translateY(-1px);
+}
+
+.whatsapp-send-btn:active {
+  transform: translateY(0);
+}
+
+.whatsapp-card-body {
+  background-color: #ffffff !important;
+  max-height: 150px;
+  min-height: 115px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* Custom scrollbar */
+.whatsapp-card-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.whatsapp-card-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.whatsapp-card-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.whatsapp-card-body::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* Message item styling */
+.whatsapp-card-body .border-bottom {
+  border-color: #edf2f7 !important;
+  padding: 10px 0;
+  transition: background-color 0.2s;
+}
+
+.whatsapp-card-body .border-bottom:hover {
+  background-color: #f9f9f9;
+}
+
+.whatsapp-card-body .btn-sm {
+  padding: 2px 6px;
+  border-radius: 50%;
+  opacity: 0.7;
+  transition: all 0.2s;
+}
+
+.whatsapp-card-body .btn-sm:hover {
+  opacity: 1;
+  background-color: #ffecec !important;
+}
+
+.text-muted {
+  color: #667781 !important;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 14px;
+}

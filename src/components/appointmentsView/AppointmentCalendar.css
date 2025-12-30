@@ -1,0 +1,47 @@
+  .appointment-calendar .react-calendar__tile--now abbr {
+    background: #22c55e !important;
+    color: #fff !important;
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 600;
+  }
+
+  .appointment-calendar .react-calendar__tile--active abbr {
+    background: #3b82f6 !important;
+    color: #fff !important;
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 600;
+  }
+
+  .appointment-calendar .react-calendar__tile--active,
+  .appointment-calendar .react-calendar__tile--now,
+  .appointment-calendar .react-calendar__tile:disabled {
+    background-color: transparent !important;
+  }
+
+  .appointment-calendar .react-calendar__tile:enabled:hover abbr {
+    background: #e0e7ef !important;
+    color: #1e293b !important;
+    border-radius: 50% !important;
+  }
+
+  .appointment-calendar .react-calendar__tile:disabled abbr {
+    background: #e5e7eb !important;
+    color: #9ca3af !important;
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 1 !important;
+  }

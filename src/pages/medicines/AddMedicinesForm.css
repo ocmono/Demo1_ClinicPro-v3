@@ -1,0 +1,185 @@
+.add-medicine-container {
+  padding: 20px;
+}
+
+.form-scroll-container {
+  padding: 20px; /* Adds outer spacing around the form */
+  width: 100%;
+  overflow-y: visible;
+  box-sizing: border-box; /* Includes padding in total width */
+}
+
+.add-medicine-form {
+  width: 100%; /* Fills the padded container */
+  background: #ffffff;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+  width: 100%; /* Ensure each form-group fills the form */
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group select {
+  width: 100%; /* Input fields fill the group */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group {
+  width: 100%;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #646cff;
+  box-shadow: 0 0 6px rgba(100, 108, 255, 0.25);
+}
+
+.submit-btn {
+  background-color: #646cff;
+  color: #fff;
+  padding: 0.9rem 1.2rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: 600;
+  transition: background-color 0.3s;
+  margin-top: 1.5rem;
+}
+
+.submit-btn:hover {
+  background-color: #535bf2;
+}
+
+.availability-section {
+  margin-top: 2rem;
+}
+
+.variation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.variation-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.add-variation-btn {
+  background-color: #e0e0ff;
+  color: #333;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-variation-btn:hover {
+  background-color: #d0d0ff;
+}
+
+.variation-table-container {
+  overflow-x: auto;
+}
+
+.variation-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.variation-table th {
+  padding: 10px;
+  text-align: center;
+  background-color: #f8f9fa;
+}
+
+.variation-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+.variation-table td.action-cell {
+  text-align: center;
+  width: 80px;
+}
+
+.variation-table input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .add-medicine-form {
+    padding: 1.5rem;
+  }
+
+  .variation-table th,
+  .variation-table td {
+    padding: 8px 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .variation-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .add-variation-btn {
+    width: 100%;
+  }
+  .form-group input[type="text"],
+  .form-group select {
+    font-size: 0.9rem;
+  }
+
+  .variation-table-container {
+    overflow-x: auto;
+  }
+}
+
+/* currency symbol */
+
+.input-with-symbol-inside {
+  position: relative;
+}
+
+.input-with-symbol-inside input {
+  padding-left: 20px; /* Adjust space for ₹ */
+  width: 100%;
+}
+
+.input-with-symbol-inside::before {
+  content: "₹";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #555;
+  font-size: 14px;
+  pointer-events: none;
+}

@@ -1,0 +1,458 @@
+/* Booking Modal Styles */
+.booking-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+}
+
+.booking-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 1000px;
+  width: 100%;
+  max-height: 90vh;
+overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.booking-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.booking-modal-header h3 {
+  margin: 0;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.booking-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.booking-modal-close:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.booking-modal-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Summary Section */
+.booking-summary {
+  width: 280px;
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+}
+
+.summary-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 3px solid #e5e7eb;
+}
+
+.summary-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.summary-role {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.summary-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  color: #4b5563;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.summary-info:last-child {
+  border-bottom: none;
+}
+
+/* Main Content */
+.booking-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow: auto;
+  display: flex;
+  flex-direction: row;
+}
+
+.booking-step {
+  flex: 1;
+  padding: 0px 20px;
+}
+
+.booking-step-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+.booking-pre-selected-date {
+  background: linear-gradient(135deg, #3454d1, #4f6bff);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 300;
+  box-shadow: 0 2px 4px rgba(52, 84, 209, 0.2);
+  justify-content: space-evenly;
+}
+
+.booking-pre-selected-date svg {
+  font-size: 1.1rem;
+}
+
+/* Appointment Type Options */
+.booking-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.booking-option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.booking-option-btn:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.booking-option-btn.active {
+  border-color: #3454d1;
+  background: #3454d1;
+  color: white;
+}
+
+/* Doctor Selection */
+.booking-doctors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.booking-doctor-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  text-align: left;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.booking-doctor-btn:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.booking-doctor-btn.active {
+  border-color: #3454d1;
+    background: #3454d1;
+  color: white;
+}
+
+.doctor-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.calendar-timezone {
+  color: #64748b;
+  font-size: 0.97rem;
+  margin-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+
+.react-calendar__tile--now abbr {
+  background: #22c55e !important;
+  color: #fff !important;
+  border-radius: 50% !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 600;
+}
+.react-calendar__tile--active abbr {
+  background-color: var(--booking-primary);
+  color: #fff !important;
+  border-radius: 50% !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 600;
+}
+.doctor-info {
+  flex: 1;
+}
+
+.doctor-info strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.doctor-specialty {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+/* Calendar */
+.booking-calendar-container {
+  margin-bottom: 1rem;
+}
+
+.booking-calendar-container .react-calendar {
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.booking-timezone {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+/* Time Slots */
+.booking-timeslots {
+  padding: 10px 10px;
+}
+
+.timeslots-header {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.timeslots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.timeslot-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timeslot-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.timeslot-btn:hover {
+  border-color: #9ca3af;
+  background: #f9fafb;
+}
+
+.timeslot-btn.active {
+  border-color: #3454d1;
+  background: #3454d1;
+  color: white;
+}
+
+.timeslot-confirm-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #25b865;
+  color: white;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.timeslot-confirm-btn:hover {
+  background: #1f9d55;
+}
+
+/* Patient Form */
+.booking-patient-form {
+  flex: 1;
+}
+
+.booking-form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.booking-form-actions .btn {
+  flex: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .booking-content {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+  .booking-modal {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .booking-modal-body {
+    flex-direction: column;
+  }
+
+  .booking-summary {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .booking-options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-doctors-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-calendar-container .react-calendar {
+    max-width: 100%;
+  }
+
+  .timeslot-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .timeslot-confirm-btn {
+    margin-top: 0.5rem;
+  }
+
+  .booking-form-actions {
+    flex-direction: column;
+  }
+}
+
+/* Theme Integration */
+.booking-modal {
+  --booking-primary: #3454d1;
+  --booking-success: #25b865;
+  --booking-danger: #ea4d4d;
+  --booking-bg: #fff;
+  --booking-bg-light: #f8fafc;
+  --booking-text: #1f2937;
+  --booking-text-secondary: #6b7280;
+  --booking-border: #e5e7eb;
+}
+
+.booking-option-btn.active {
+  border-color: var(--booking-primary);
+  background: var(--booking-primary);
+}
+
+.booking-doctor-btn.active {
+  border-color: var(--booking-primary);
+    background: var(--booking-primary);
+}
+
+.timeslot-btn.active {
+  border-color: var(--booking-primary);
+  background: var(--booking-primary);
+}
+
+.timeslot-confirm-btn {
+  background: var(--booking-success);
+}
+
+.timeslot-confirm-btn:hover {
+  background: #1f9d55;
+} 

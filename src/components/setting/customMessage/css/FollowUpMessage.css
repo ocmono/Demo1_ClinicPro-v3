@@ -1,0 +1,117 @@
+/* FollowUpMessage.css */
+
+/* .followup-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+} */
+
+/* .followup-card hr {
+  margin: 0.5rem 0;
+  border: 1;
+  border-top: 1px solid #f0f2f5;
+} */
+
+.followup-card-inner {
+  padding: 0 1rem 1rem;
+}
+
+.followup-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.followup-input-group .form-control {
+  flex: 1;
+  border: 1px solid #e9edef;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 14px;
+  transition: all 0.3s;
+  background-color: #f8f9fa;
+}
+
+.followup-input-group .form-control:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  background-color: #ffffff;
+}
+
+.followup-send-btn {
+  background-color: #4a90e2;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: white;
+  transition: all 0.3s;
+}
+
+.followup-send-btn:hover {
+  background-color: #357abd;
+  transform: translateY(-1px);
+}
+
+.followup-send-btn:active {
+  transform: translateY(0);
+}
+
+.followup-card-body {
+  max-height: 150px;
+  min-height: 115px;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin-top: 10px;
+}
+
+/* Custom scrollbar */
+.followup-card-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.followup-card-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.followup-card-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.followup-card-body::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Message item styling */
+.followup-card-body .border-bottom {
+  border-color: #edf2f7 !important;
+  padding: 10px 0;
+  transition: background-color 0.2s;
+}
+
+.followup-card-body .border-bottom:hover {
+  background-color: #f8fafc;
+}
+
+.followup-card-body .btn-sm {
+  padding: 2px 6px;
+  border-radius: 50%;
+  opacity: 0.7;
+  transition: all 0.2s;
+}
+
+.followup-card-body .btn-sm:hover {
+  opacity: 1;
+  background-color: #fee2e2 !important;
+}
+
+.text-muted {
+  color: #718096 !important;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 14px;
+}
