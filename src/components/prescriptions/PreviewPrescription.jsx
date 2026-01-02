@@ -506,15 +506,21 @@ const PrintVersion = memo(({
           <h5 className="section-title">Billing Summary</h5>
           <table className="table table-sm table-bordered">
             <tbody>
-              {["medicines", "labTests", "vaccines"].map((key) => (
-                <tr key={key}>
-                  <td width="70%" className="text-muted">{key} Total</td>
-                  <td width="30%" className="fw-semibold">₹ {totals?.[key] || '0'}</td>
-                </tr>
-              ))}
+              <tr>
+                <td width="70%" className="text-muted">Medicines Total</td>
+                <td width="30%" className="fw-semibold">₹ {(parseFloat(totals?.medicines) || 0).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td className="text-muted">Lab Tests Total</td>
+                <td className="fw-semibold">₹ {(parseFloat(totals?.labTests) || 0).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td className="text-muted">Vaccines Total</td>
+                <td className="fw-semibold">₹ {(parseFloat(totals?.vaccines) || 0).toFixed(2)}</td>
+              </tr>
               <tr>
                 <td className="text-muted">Consultation Fee</td>
-                <td className="fw-semibold">₹ {totals?.consultation || '0'}</td>
+                <td className="fw-semibold">₹ {(parseFloat(totals?.consultation) || 0).toFixed(2)}</td>
               </tr>
               <tr className="total-row">
                 <td className="text-muted">Total Amount</td>
@@ -752,38 +758,51 @@ const SimpleTable = ({ headers, rows }) => (
 
 /* ---------- BILLING ---------- */
 
-const BillingSummary = ({ totals }) => (
-  <Section title="Billing Summary">
-    <div className="row small">
-      {["medicines", "labTests", "vaccines"].map((key) => (
-        <React.Fragment key={key}>
-          <div className="col-6 text-muted mb-2">{key} Total</div>
-          <div className="col-6 fw-semibold mb-2">₹ {totals?.[key]}</div>
-        </React.Fragment>
-      ))}
-      <div className="col-6 text-muted mb-2">Consultation</div>
-      <div className="col-6 fw-semibold mb-2">
-        ₹ {totals?.consultation} ({totals?.paymentType}){" "}
-        {totals?.paymentStatus === "pending"
-          ? <span className="badge bg-warning text-dark">Pending</span>
-          : <span className="badge bg-success">Paid</span>}
-      </div>
-      <div className="col-12 mt-2 pt-2 border-top">
-        <div className="d-flex justify-content-between">
-          <span className="fw-bold">Total Amount:</span>
-          <span className="fw-bold text-primary">
-            ₹ {(
-              (parseFloat(totals?.medicines) || 0) +
-              (parseFloat(totals?.labTests) || 0) +
-              (parseFloat(totals?.vaccines) || 0) +
-              (parseFloat(totals?.consultation) || 0)
-            ).toFixed(2)}
-          </span>
+const BillingSummary = ({ totals }) => {
+  const formatCurrency = (value) => {
+    const num = parseFloat(value) || 0;
+    return num.toFixed(2);
+  };
+
+  const items = [
+    { key: "medicines", label: "Medicines Total" },
+    { key: "labTests", label: "Lab Tests Total" },
+    { key: "vaccines", label: "Vaccines Total" },
+  ];
+
+  return (
+    <Section title="Billing Summary">
+      <div className="row small">
+        {items.map((item) => (
+          <React.Fragment key={item.key}>
+            <div className="col-6 text-muted mb-2">{item.label}</div>
+            <div className="col-6 fw-semibold mb-2">₹ {formatCurrency(totals?.[item.key])}</div>
+          </React.Fragment>
+        ))}
+        <div className="col-6 text-muted mb-2">Consultation</div>
+        <div className="col-6 fw-semibold mb-2">
+          ₹ {formatCurrency(totals?.consultation)} ({totals?.paymentType || "cash"}){" "}
+          {totals?.paymentStatus === "pending"
+            ? <span className="badge bg-warning text-dark">Pending</span>
+            : <span className="badge bg-success">Paid</span>}
+        </div>
+        <div className="col-12 mt-2 pt-2 border-top">
+          <div className="d-flex justify-content-between">
+            <span className="fw-bold">Total Amount:</span>
+            <span className="fw-bold text-primary">
+              ₹ {formatCurrency(
+                (parseFloat(totals?.medicines) || 0) +
+                (parseFloat(totals?.labTests) || 0) +
+                (parseFloat(totals?.vaccines) || 0) +
+                (parseFloat(totals?.consultation) || 0)
+              )}
+            </span>
+          </div>
         </div>
       </div>
-    </div>
-  </Section>
-);
+    </Section>
+  );
+};
 
 /* ---------- FOOTER ---------- */
 

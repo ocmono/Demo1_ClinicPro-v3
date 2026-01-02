@@ -143,7 +143,7 @@ const Header = ({ children, sticky = false }) => {
             <div className="header-wrapper">
 
                 {/* <!--! [Start] Header Left !--> */}
-                <div className="header-left d-flex align-items-center gap-4">
+                <div className="header-left d-flex align-items-center gap-2">
                     {/* <!--! [Start] nxl-head-mobile-toggler !--> */}
                     <a href="#" className="nxl-head-mobile-toggler" onClick={(e) => {e.preventDefault(), setNavigationOpen(true)}} id="mobile-collapse">
                         <div className={`hamburger hamburger--arrowturn ${navigationOpen ? "is-active" : ""}`}>
@@ -175,6 +175,20 @@ const Header = ({ children, sticky = false }) => {
                     <div className="nxl-lavel-mega-menu-toggle d-flex d-lg-none">
                         <a href="#" onClick={(e) => {e.preventDefault(), setOpenMegaMenu(true)}} id="nxl-lavel-mega-menu-open">
                             <FiAlignLeft size={24} />
+                        </a>
+                    </div>
+
+                    <div className="nxl-h-item d-none d-sm-flex" >
+                        <a 
+                            href="#" 
+                            className="nxl-head-link" 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                window.history.back();
+                            }}
+                            title="Go back"
+                        >
+                            <FiArrowLeft size={20} />
                         </a>
                     </div>
                     {/* <!--! [End] nxl-lavel-mega-menu-toggle !-->
@@ -226,14 +240,14 @@ const Header = ({ children, sticky = false }) => {
                     <div className="d-flex align-items-center">
                         {/* <SearchModal />
                         <LanguagesModal /> */}
-                        <div className="nxl-h-item d-none d-sm-flex" >
+                        {/* <div className="nxl-h-item d-none d-sm-flex" >
                             <div className="full-screen-switcher">
                                 <span className="nxl-head-link me-0">
                                     <FiMaximize size={20} className="maximize" onClick={fullScreenMaximize} />
                                     <FiMinimize size={20} className="minimize" onClick={fullScreenMinimize} />
                                 </span>
                             </div>
-                        </div>
+                        </div> */}
                         {/* <div className="nxl-h-item dark-light-theme">
                             <div className="nxl-head-link me-0 dark-button" onClick={() => handleThemeMode("dark")}>
                                 <FiMoon size={20} />

@@ -2,7 +2,7 @@ import React, { useMemo, useState, useContext, useEffect } from 'react';
 import Table from '@/components/shared/table/Table';
 import Dropdown from '@/components/shared/Dropdown';
 import {
-  FiEdit3, FiTrash2, FiMoreHorizontal, FiRefreshCw, FiRepeat, FiClock
+  FiEdit3, FiTrash2, FiMoreHorizontal, FiRefreshCw, FiRepeat, FiClock, FiCheck
 } from 'react-icons/fi';
 import { GrRevert } from "react-icons/gr";
 import { FaWhatsapp } from "react-icons/fa";

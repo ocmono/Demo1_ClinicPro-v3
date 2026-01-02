@@ -414,7 +414,7 @@ const TemplatesManagement = () => {
                             <td>
                               <div className="d-flex gap-1">
                                   <button
-                                  className="btn btn-sm btn-outline-primary"
+                                    className="avatar-text avatar-md btn-outline-primary"
                                   onClick={() => setSelectedTemplate(t)}
                                 >
                                     <FiEye />
@@ -422,13 +422,13 @@ const TemplatesManagement = () => {
                                 {t.isCustom && (
                                   <>
                                       <button
-                                      className="btn btn-sm btn-outline-success"
+                                        className="avatar-text avatar-md btn-outline-success"
                                       onClick={() => handleEdit(t)}
                                     >
                                         <FiEdit />
                                     </button>
                                       <button
-                                      className="btn btn-sm btn-outline-danger"
+                                        className="avatar-text avatar-md btn-outline-danger"
                                         onClick={() => handleDelete(t.id)}
                                     >
                                         <MdDelete />

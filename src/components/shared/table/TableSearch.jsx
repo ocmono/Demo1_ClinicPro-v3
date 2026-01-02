@@ -4,13 +4,13 @@ import './TableSearch.css'
 
 const TableSearch = ({ table, setGlobalFilter, globalFilter, onRefresh, onPrint, showPrint, showFilter, isRefreshing }) => {
     return (
-        <div className='row gy-2 no-print'>
-            <div className='col-sm-12 col-md-6 ps-0 m-0 pb-10'>
+        <div className='row gy-2 no-print py-3'>
+            <div className='col-sm-12 col-md-6 p-0 m-0 pb-10'>
                 <div className='dataTables_length d-flex justify-content-md-start justify-content-center'>
                     <label className='d-flex align-items-center gap-1'>
                         Show
                         <select
-                            className='form-select form-select-sm w-auto pe-4'
+                            className='form-select form-select-sm w-auto pe-4' 
                             value={table.getState().pagination.pageSize}
                             onChange={e => {
                                 table.setPageSize(Number(e.target.value))
@@ -25,7 +25,7 @@ const TableSearch = ({ table, setGlobalFilter, globalFilter, onRefresh, onPrint,
                     </label>
                 </div>
             </div>
-            <div className='col-sm-12 col-md-6 ps-0 m-0 pb-10'>
+            <div className='col-sm-12 col-md-6 p-0 m-0 pb-10'>
                 <div className='dataTables_filter d-flex justify-content-md-end justify-content-center gap-2'>
                     <label className='d-inline-flex align-items-center gap-2'>
                         Search:

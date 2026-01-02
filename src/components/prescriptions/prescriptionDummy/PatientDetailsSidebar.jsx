@@ -1,6 +1,24 @@
 import React from "react";
 
 const PatientDetailsSidebar = React.memo(({ patient }) => {
+  console.log(patient);
+  
+  const calculateAge = (dateOfBirth) => {
+    if (!dateOfBirth) return "N/A";
+    try {
+      const dob = new Date(dateOfBirth);
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age--;
+      }
+      return age;
+    } catch (error) {
+      return "N/A";
+    }
+  };
+
   if (!patient) {
     return (
       <div className="text-center text-muted py-4">
@@ -30,7 +48,7 @@ const PatientDetailsSidebar = React.memo(({ patient }) => {
       <hr  className="my-2"/>
       <div className="d-flex justify-content-between">
         <span className="fw-semibold">Age</span>
-        <span>{patient.patientAge || "N/A"}</span>
+        <span>{calculateAge(patient.patientdob)}</span>
       </div>
       <div className="d-flex justify-content-between">
         <span className="fw-semibold">Gender</span>

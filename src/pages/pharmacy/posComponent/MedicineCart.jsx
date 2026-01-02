@@ -157,12 +157,12 @@ const MedicineCart = ({
   return (
     <>
       <div className="card shadow-sm border-0 h-100">
-        <div className="card-header py-3 d-flex justify-content-between align-items-center" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
-          <h4 className="mb-0 text-white d-flex align-items-center">
-            <FaShoppingCart className="me-2" />
+        <div className="card-header py-3 d-flex justify-content-between align-items-center bg-white" style={{ borderBottom: '1px solid #e5e7eb' }}>
+          <h4 className="fw-bold d-flex align-items-center" style={{ color: '#2d3748' }}>
+            {/* <FaShoppingCart className="me-2" /> */}
             Cart
             {cartItems.length > 0 && (
-              <span className="badge bg-white text-danger rounded-pill ms-2 px-2 py-1" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+              <span className="badge bg-primary text-white rounded-pill ms-2 px-2 py-1" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
                 {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}
               </span>
             )}
@@ -173,23 +173,39 @@ const MedicineCart = ({
             )}
           </h4>
           {cartItems.length > 0 && (
-            <div className="d-flex gap-2">
+            <div className="d-flex align-items-center gap-2">
               {/* Print Button */}
               <button 
-                className="btn btn-outline-light btn-sm d-flex align-items-center"
+                className="btn btn-light-brand successAlertMessage d-flex align-items-center"
                 onClick={() => setShowPrintModal(true)}
                 title="Print cart/receipt"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                  e.currentTarget.style.boxShadow = '0 2px 4px 0 rgba(0, 0, 0, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#ffffff';
+                  e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                }}
               >
-                <FaPrint className="me-1" />
+                <FaPrint className="me-2" style={{ fontSize: '14px' }} />
                 Print
               </button>
               
               <button 
-                className="btn btn-outline-light btn-sm d-flex align-items-center"
+                className="btn btn-light-brand successAlertMessage d-flex align-items-center"
                 onClick={clearCart}
                 title="Clear entire cart"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                  e.currentTarget.style.boxShadow = '0 2px 4px 0 rgba(0, 0, 0, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#ffffff';
+                  e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                }}
               >
-                <FaTrashAlt className="me-1" />
+                <FaTrashAlt className="me-2" style={{ fontSize: '14px' }} />
                 Clear All
               </button>
             </div>
@@ -282,8 +298,10 @@ const MedicineCart = ({
                     </>
                   ) : (
                     <>
+                    <span style={{ fontSize: '14px' }}>
                       <FaCreditCard className="me-2" />
                       Checkout ₹{finalTotal.toFixed(2)}
+                      </span>
                     </>
                   )}
                 </button>

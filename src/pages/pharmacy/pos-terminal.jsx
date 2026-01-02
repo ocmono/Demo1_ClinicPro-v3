@@ -21,7 +21,7 @@ import CameraScannerModal from './posComponent/CameraScannerModal';
 
 import { 
   FaSearch, FaBarcode, FaCreditCard, FaUser, FaMoneyBillWave,FaCreditCard as FaCard, FaMobileAlt , FaFileInvoiceDollar, FaCapsules, FaSort, FaSortUp,
-  FaSortDown, FaTh, FaList, FaGift, FaReceipt, FaExchangeAlt, FaFolderOpen, FaKeyboard, FaKey, FaFileMedical, FaCamera , FaTruck } from 'react-icons/fa';
+  FaSortDown, FaTh, FaList, FaGift, FaReceipt, FaExchangeAlt, FaFolderOpen, FaKeyboard, FaKey, FaFileMedical, FaCamera , FaTruck, FaEllipsisV } from 'react-icons/fa';
 
 const paymentMethods = ['Cash', 'Card', 'UPI', 'Gift Card'];
 const PAGE_SIZE = 8;
@@ -736,7 +736,7 @@ const handlePaymentDetailChange = (field, value, finalTotal) => {
   };
 
   const confirmCheckout = async () => {
-    setCheckoutDialog(false);
+    setCheckoutDialog(false); 
     setLoading(true);
     
     try {
@@ -754,6 +754,7 @@ const handlePaymentDetailChange = (field, value, finalTotal) => {
         invoice_no: `INV-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
         patient_id: customer,
         total_amount: subtotal,
+
         discount: discount,
         discount_type: discountType === 'flat' ? 'Flat' : 'Percent',
         grand_total: finalTotal,
@@ -1107,9 +1108,8 @@ const DeliveryChargeModal = ({
           {/* Left Column - Medicine Search & Table */}
           <div className="col-lg-8">
             <div className="card shadow-sm border-0 h-100">
-              <div className="card-header py-3 d-flex justify-content-between align-items-center" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                <h4 className="mb-0 text-white">
-                  <FaCapsules className="me-2" />
+              <div className="card-header py-3 d-flex justify-content-between align-items-center bg-white" style={{ borderBottom: '1px solid #e5e7eb' }}>
+                <h4 className="mb-0 fw-bold" style={{ color: '#2d3748' }}>
                   Medicine Catalog
                   {currentDraftId && (
                     <span className="badge bg-warning text-dark ms-2">
@@ -1117,24 +1117,37 @@ const DeliveryChargeModal = ({
                     </span>
                   )}
                 </h4>
-                <div className="d-flex gap-2">
-                  {/* View Prescriptions Button - Only show when customer is selected */}
+                <div className="d-flex align-items-center gap-2">
                   {customer && patientPrescriptions.length > 0 && (
                     <button
-                      className="btn btn-outline-light btn-sm d-flex align-items-center"
+                      className="btn btn-light-brand successAlertMessage"
                       onClick={() => setShowPrescriptions(true)}
-                      title="View patient prescriptions"
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#f9fafb';
+                        e.currentTarget.style.boxShadow = '0 2px 4px 0 rgba(0, 0, 0, 0.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#ffffff';
+                        e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                      }}
                     >
-                      <FaFileMedical className="me-1" />
+                      <FaFileMedical className="me-2" style={{ fontSize: '14px' }} />
                       Prescriptions ({patientPrescriptions.length})
                     </button>
                   )}
                   <button
-                    className="btn btn-outline-light btn-sm d-flex align-items-center"
+                    className="btn btn-light-brand successAlertMessage"
                     onClick={() => setShowDraftsList(true)}
-                    title="View saved drafts"
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.boxShadow = '0 2px 4px 0 rgba(0, 0, 0, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#ffffff';
+                      e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                    }}
                   >
-                    <FaFolderOpen className="me-1" /> 
+                    <FaFolderOpen className="me-2" style={{ fontSize: '14px' }} />
                     Drafts ({drafts.length})
                   </button>
                 </div>
@@ -1424,8 +1437,8 @@ const DeliveryChargeModal = ({
                           {medicineTypes.map((type, index) => (
                             <button
                               key={index}
-                              className={`btn btn-sm ${
-                                selectedMedicineType === type ? 'btn-primary' : 'btn-outline-primary'
+                              className={`badge  text-dark border border-gray-300 ${
+                                selectedMedicineType === type ? 'bg-gray-200' : 'bg-white'
                               }`}
                               onClick={() => {
                                 setSelectedMedicineType(type);
@@ -1439,17 +1452,21 @@ const DeliveryChargeModal = ({
                       </div>
 
                       <div className="col-md-4  d-flex justify-content-end">
-                          <div className="btn-group" role="group">
+                          <div className="d-flex">
                             <button
                               type="button"
-                              className={`btn btn-sm ${viewMode === 'table' ? 'btn-primary' : 'btn-outline-primary'} d-flex align-items-center`}
+                              className={`badge text-dark border border-gray-300 d-flex align-items-center ${
+                                viewMode === 'table' ? 'bg-gray-200' : 'bg-white'
+                              }`}
                               onClick={() => setViewMode('table')}
                             >
                               <FaList className="me-1" />
                             </button>
                             <button
                               type="button"
-                              className={`btn btn-sm ${viewMode === 'card' ? 'btn-primary' : 'btn-outline-primary'} d-flex align-items-center`}
+                              className={`badge text-dark border border-gray-300 d-flex align-items-center ${
+                                viewMode === 'card' ? 'bg-gray-200' : 'bg-white'
+                              }`}
                               onClick={() => setViewMode('card')}
                             >
                               <FaTh className="me-1" />

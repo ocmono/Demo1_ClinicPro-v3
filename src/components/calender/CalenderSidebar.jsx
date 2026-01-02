@@ -17,6 +17,8 @@ import { usePrescription } from "../../contentApi/PrescriptionProvider";
 import { usePatient } from "../../context/PatientContext";
 import PatientModal from "../patients/PatientModal";
 import { toast } from "react-toastify";
+import { RiArrowUpDownLine } from "react-icons/ri";
+import { useVaccine } from "@/context/VaccineContext";
 
 import "./CalenderSidebar.css";
 import AppointmentSection from "./calenderSidebar/AppointmentSection";
@@ -62,6 +64,18 @@ const parseTime = (timeStr) => {
   return hours * 60 + minutes;
 };
 
+const getVaccineDisplayStatus = (vaccine, todayDate) => {
+  if (vaccine.status === "completed") return "completed";
+
+  const scheduleDate = normalizeDate(vaccine.schedule_date);
+
+  if (scheduleDate && scheduleDate < todayDate) {
+    return "overdue";
+  }
+
+  return "scheduled";
+};
+
 // Custom hooks
 const sortAppointments = (appointments, sortOrder) => {
   return [...appointments].sort((a, b) => {
@@ -76,6 +90,42 @@ const sortAppointments = (appointments, sortOrder) => {
     const timeB = parseTime(b.time);
     return sortOrder === "asc" ? timeA - timeB : timeB - timeA;
   });
+};
+
+const formatAppointmentDate = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d)) return '';
+
+  const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+  const day = days[d.getDay()];
+  const date = d.getDate().toString().padStart(2, '0');
+  const month = months[d.getMonth()];
+  const year = d.getFullYear().toString().slice(-2);
+
+  return `${day}-${date}${month}-${year}`;
+};
+
+const sortVaccines = (list, sortKey) => {
+  const items = [...list];
+
+  switch (sortKey) {
+    case "date_desc":
+      return items.sort(
+        (a, b) => new Date(b.schedule_date) - new Date(a.schedule_date)
+      );
+    case "dose_asc":
+      return items.sort((a, b) => (a.dose_number || 0) - (b.dose_number || 0));
+    case "dose_desc":
+      return items.sort((a, b) => (b.dose_number || 0) - (a.dose_number || 0));
+    case "date_asc":
+    default:
+      return items.sort(
+        (a, b) => new Date(a.schedule_date) - new Date(b.schedule_date)
+      );
+  }
 };
 
 const usePatientMatcher = () => {
@@ -132,6 +182,7 @@ const CalenderSidebar = ({
     done: true,
     cancelled: true,
     filters: false,
+    vaccines: true,
   });
 
   const [sortOrders, setSortOrders] = useState({
@@ -147,10 +198,13 @@ const CalenderSidebar = ({
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [modalMode, setModalMode] = useState("view");
   const [showDoctorFilter, setShowDoctorFilter] = useState(false);
+  const [vaccineSortOpen, setVaccineSortOpen] = useState(false);
+  const [vaccineSort, setVaccineSort] = useState("date_asc");
 
   // Hooks
   const navigate = useNavigate();
   const { markVisitDone, setDoneVisits, updateStatus } = useContext(AppointmentContext);
+  const { vaccineSchedules, updateVaccineScheduleStatus } = useVaccine();
   const { setDateSelected, setCurrentStep, setLaunchedFromCalendar } = useBooking();
   const { setPrescriptionFormData, allPrescriptions } = usePrescription();
   const { patients: allPatients } = usePatient();
@@ -163,13 +217,66 @@ const CalenderSidebar = ({
   const uniqueDoctors = useMemo(() => {
     return [...new Set(
       allAppointments
-      .map(appt => appt.doctor)
-      .filter(Boolean)
-  )].sort();
+        .map(appt => appt.doctor)
+        .filter(Boolean)
+    )].sort();
   }, [allAppointments]);
 
   // Derived state
   const displayDate = selectedDate || format(new Date(), "yyyy-MM-dd");
+  const todayDate = normalizeDate(new Date());
+
+  const normalizeLocalDate = (dateStr) => {
+    if (!dateStr) return "";
+
+    // ✅ already a date string, do NOT re-parse
+    if (typeof dateStr === "string" && dateStr.length === 10) {
+      return dateStr;
+    }
+
+    const d = new Date(dateStr);
+    if (isNaN(d)) return "";
+
+    // convert to local date (same as FullCalendar)
+    const local = new Date(
+      d.getTime() - d.getTimezoneOffset() * 60000
+    );
+
+    return local.toISOString().split("T")[0];
+  };
+
+  const vaccinesForSidebar = useMemo(() => {
+    if (!vaccineSchedules?.length) return [];
+
+    const filtered = showAllData
+      ? vaccineSchedules
+      : vaccineSchedules.filter(
+        v =>
+          normalizeLocalDate(v.schedule_date) ===
+          normalizeLocalDate(displayDate)
+      );
+
+    return sortVaccines(filtered, vaccineSort);
+  }, [vaccineSchedules, displayDate, showAllData, vaccineSort]);
+
+  const patientMap = useMemo(() => {
+    const map = new Map();
+    allPatients?.forEach(p => {
+      const key = p.patient_id || p.id;
+      if (key) map.set(key.toString(), p);
+    });
+    return map;
+  }, [allPatients]);
+
+  const getPatientName = (vaccine) => {
+    if (vaccine.patient_name) return vaccine.patient_name;
+
+    const patient =
+      patientMap.get(vaccine.patient_id?.toString()) ||
+      patientMap.get(vaccine.patientId?.toString());
+
+    return patient?.name || "Unknown Patient";
+  };
 
   // Filtered and sorted appointments
   const filteredAppointments = useMemo(() => {
@@ -294,6 +401,19 @@ const CalenderSidebar = ({
     }
   }, [allPatients]);
 
+  const handleCompleteVaccine = useCallback(
+    async (vaccineId) => {
+      try {
+        // 🔁 Adjust API call if needed
+        await updateVaccineScheduleStatus(vaccineId, "completed");
+        toast.success("Vaccine marked as completed");
+      } catch (error) {
+        toast.error("Failed to update vaccine status");
+      }
+    },
+    []
+  );
+
   const viewPrescription = useCallback((appointment) => {
     const enhancedAppt = enhanceAppointment(appointment);
     const prescription = findPrescription(enhancedAppt);
@@ -359,6 +479,18 @@ const CalenderSidebar = ({
     }
   }, [updateStatus, setDoneVisits]);
 
+  const vaccineOverviewCount = useMemo(() => {
+    if (!vaccineSchedules?.length) return 0;
+
+    if (showAllData) {
+      return vaccineSchedules.length;
+    }
+
+    return vaccineSchedules.filter(
+      v => normalizeLocalDate(v.schedule_date) === normalizeLocalDate(displayDate)
+    ).length;
+  }, [vaccineSchedules, displayDate, showAllData]);
+
   // Summary data
   const summaryData = useMemo(() => [
     { title: "Pending", count: sortedAppointments.pending.length, icon: FiClock, className: "pending" },
@@ -366,7 +498,8 @@ const CalenderSidebar = ({
     { title: "Rejected", count: sortedAppointments.cancelled.length, icon: FiClock, className: "tomorrow" },
     { title: "Completed", count: sortedAppointments.completed.length, icon: FiCalendar, className: "weekly" },
     { title: "Approved", count: sortedAppointments.approved.length, icon: FiCalendar, className: "monthly" },
-  ], [sortedAppointments]);
+    { title: "Vaccines", count: vaccineOverviewCount, icon: FiCalendar, className: "vaccine" },
+  ], [sortedAppointments, vaccineOverviewCount]);
 
   return (
     <div className={`content-sidebar content-sidebar-xl calendar-sidebar ${sidebarOpen ? "app-sidebar-open" : ""}`}>
@@ -574,6 +707,154 @@ const CalenderSidebar = ({
               onCreatePrescription={handleCreatePrescriptionAndComplete}
               onComplete={handleConfirmComplete}
             />
+            {vaccinesForSidebar.length > 0 && (
+              <div className="calendar-sidebar-item">
+                <div
+                  className="section-header"
+                  onClick={() => {
+                    // Add toggle functionality for vaccine section
+                    if (!expandedSections.vaccines) {
+                      setExpandedSections(prev => ({ ...prev, vaccines: true }));
+                    }
+                  }}
+                >
+                  <h6 className="fs-12 fw-bold text-uppercase text-primary mb-0 d-flex align-items-center justify-content-between">
+                    <div className="d-flex align-items-center">
+                      <span className="me-2">💉</span>
+                      <span>Vaccine Schedules ({vaccinesForSidebar.length})</span>
+                    </div>
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-sm p-0 ms-1 border-0 bg-transparent"
+                        style={{ color: '#0d6efd', textDecoration: 'none' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Toggle sort dropdown or implement sort functionality
+                          setVaccineSortOpen(!vaccineSortOpen);
+                        }}
+                        title="Sort vaccine schedules"
+                      >
+                        <RiArrowUpDownLine size={12} />
+                      </button>
+                      <div onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedSections(prev => ({ ...prev, vaccines: !prev.vaccines }));
+                      }}>
+                        {expandedSections.vaccines ? <FiChevronDown size={16} /> : <FiChevronRight size={16} />}
+                      </div>
+                    </div>
+                  </h6>
+                </div>
+
+                {expandedSections.vaccines && (
+                  <>
+                    {/* Sort Dropdown - appears when sort button is clicked */}
+                    {vaccineSortOpen && (
+                      <div className="section-content p-2">
+                        <div className="vaccine-sort-dropdown">
+                          <div
+                            className={`vaccine-sort-option ${vaccineSort === 'date_asc' ? 'active' : ''}`}
+                            onClick={() => {
+                              setVaccineSort('date_asc');
+                              setVaccineSortOpen(false);
+                            }}
+                          >
+                            Date (Earliest First)
+                          </div>
+                          <div
+                            className={`vaccine-sort-option ${vaccineSort === 'date_desc' ? 'active' : ''}`}
+                            onClick={() => {
+                              setVaccineSort('date_desc');
+                              setVaccineSortOpen(false);
+                            }}
+                          >
+                            Date (Latest First)
+                          </div>
+                          <div
+                            className={`vaccine-sort-option ${vaccineSort === 'dose_asc' ? 'active' : ''}`}
+                            onClick={() => {
+                              setVaccineSort('dose_asc');
+                              setVaccineSortOpen(false);
+                            }}
+                          >
+                            Dose (Lowest First)
+                          </div>
+                          <div
+                            className={`vaccine-sort-option ${vaccineSort === 'dose_desc' ? 'active' : ''}`}
+                            onClick={() => {
+                              setVaccineSort('dose_desc');
+                              setVaccineSortOpen(false);
+                            }}
+                          >
+                            Dose (Highest First)
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Vaccine Cards */}
+                    <div className="section-content">
+                      {vaccinesForSidebar.map((v) => (
+                        <div
+                          key={v.id}
+                          className="appointment-card mb-1 vaccine-card"
+                        >
+                          <div className="appointment-card-content">
+                            <div className="appointment-main-info">
+                              <span className="appointment-id">
+                                #{v.patient_id}
+                              </span>
+
+                              <span className="patient-name">
+                                {getPatientName(v)}
+                              </span>
+                            </div>
+
+                            <div className="appointment-time mb-0">
+                              Dose {v.dose_number}
+                            </div>
+                            <div className="appointment-time mb-0">
+                              {formatAppointmentDate(v.schedule_date)}
+                            </div>
+                            {(() => {
+                              const displayStatus = getVaccineDisplayStatus(v, todayDate);
+
+                              return (
+                                <span
+                                  className={`badge ${displayStatus === "completed"
+                                    ? "bg-success"
+                                    : displayStatus === "overdue"
+                                      ? "bg-danger"
+                                      : "bg-warning"
+                                    }`}
+                                >
+                                  {displayStatus.toUpperCase()}
+                                </span>
+                              );
+                            })()}
+                            <div className="appointment-actions">
+                              {(() => {
+                                const displayStatus = getVaccineDisplayStatus(v, todayDate);
+
+                                return displayStatus !== "completed" ? (
+                                  <button
+                                    className="btn btn-sm btn-outline-info"
+                                    onClick={() => handleCompleteVaccine(v.id)}
+                                    title="Mark as Completed"
+                                  >
+                                    <FiCheck size={12} />
+                                  </button>
+                                ) : null;
+                              })()}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </PerfectScrollbar>
         </div>
       </div>

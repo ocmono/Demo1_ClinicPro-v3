@@ -11,7 +11,9 @@ import {FiAlignLeft,FiCalendar,FiX} from "react-icons/fi";
 import {format,startOfWeek,endOfWeek,startOfMonth,endOfMonth,addDays,isBefore,startOfDay} from "date-fns";
 import { AppointmentContext } from "../../context/AppointmentContext";
 import { useAuth } from "../../contentApi/AuthContext";
+import { FaSyringe } from "react-icons/fa";
 import BookingModal from "./BookingModal";
+import { useVaccine } from "@/context/VaccineContext";
 import "../calender/CalenderContent.css";
 
 // Constants
@@ -186,6 +188,7 @@ const CalenderContent = () => {
   const [currentMonth, setCurrentMonth] = useState("");
   const navigate = useNavigate();
   const { appointments: allAppointments } = useContext(AppointmentContext);
+  const { vaccineSchedules } = useVaccine();
 
   // Use the updated hooks with doctor filter
   const {
@@ -211,6 +214,24 @@ const CalenderContent = () => {
     handleViewAllClick(); // Show all data
   }, [clearDoctorFilter, handleViewAllClick]);
 
+  const normalizeLocalDate = (dateStr) => {
+    if (!dateStr) return "";
+
+    // ✅ If backend already sends YYYY-MM-DD, use it directly
+    if (typeof dateStr === "string" && dateStr.length === 10) {
+      return dateStr;
+    }
+
+    const d = new Date(dateStr);
+    if (isNaN(d)) return "";
+
+    // Convert UTC → local safely
+    const local = new Date(
+      d.getTime() - d.getTimezoneOffset() * 60000
+    );
+
+    return local.toISOString().split("T")[0];
+  };
 
   // Day cell content renderer
   const dayCellContent = useCallback((args) => {
@@ -236,7 +257,7 @@ const CalenderContent = () => {
       return acc;
     }, {});
 
-    const circlesHtml = Object.entries(STATUS_CONFIG)
+    const appointmentCircles = Object.entries(STATUS_CONFIG)
       .sort(([,a], [,b]) => a.priority - b.priority)
       .map(([status, config]) => 
         statusCounts[status] > 0 
@@ -245,10 +266,29 @@ const CalenderContent = () => {
       )
       .join('');
 
+    const vaccineCount = (vaccineSchedules || []).filter(
+      (v) => normalizeLocalDate(v.schedule_date) === formattedDate
+    ).length;
+
+    const vaccineCircle =
+      vaccineCount > 0
+        ? `<div class="status-circle vaccine">${vaccineCount}</div>`
+        : '';
+
     return {
       html: `
         <div class="fc-daygrid-day-number">${args.dayNumberText}</div>
-        <div class="appointment-status-circles">${circlesHtml}</div>
+        ${
+        vaccineCount > 0
+          ? `
+          <div class="vaccine-badge">
+            <span class="vaccine-icon">💉</span>
+            <span class="vaccine-count">${vaccineCount}</span>
+          </div>
+        `
+          : ''
+        }
+        <div class="appointment-status-circles">${appointmentCircles}</div>
       `,
     };
   }, [filteredAppointments, doneVisits]);

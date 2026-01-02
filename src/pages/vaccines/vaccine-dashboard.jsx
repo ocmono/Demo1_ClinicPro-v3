@@ -1237,7 +1237,7 @@ const VaccineDashboard = () => {
                                           </td>
                                           <td>
                                             <div>
-                                              <div className="fw-medium">{patient.age || 'N/A'} years</div>
+                                              <div className="fw-medium">{patient.age || 'N/A'}</div>
                                               <small className="text-muted">{patient.gender || 'N/A'}</small>
                                             </div>
                                           </td>

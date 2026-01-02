@@ -445,3 +445,32 @@
   /* grey text */
   font-weight: 600;
 }
+.status-circle.vaccine {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+}
+
+.vaccine-badge {
+  position: absolute;
+  top: 2px;
+  left: 120px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #ede9fe;
+  color: #5b21b6;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 12px;
+  z-index: 3;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.vaccine-icon {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.vaccine-count {
+  line-height: 1;
+}

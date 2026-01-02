@@ -21,7 +21,7 @@ function formatCustomDate(dateStr) {
   const month = d.getMonth() + 1; // Months are 0-based
   const year = d.getFullYear();
 
-  // 🔹 Return in D/M/YYYY format (no padding, no names)
+  // 🔹 Return in D/M/YYYY format (no padding, no names)  
   return `${day}/${month}/${year}`;
 }
 

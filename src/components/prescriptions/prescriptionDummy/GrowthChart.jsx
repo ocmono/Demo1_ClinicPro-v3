@@ -218,12 +218,18 @@ const GrowthChart = () => {
   const { prescriptionFormData } = usePrescription();
   const patient = prescriptionFormData?.patient;
   
+  console.log('asdbjfhgadjhfadjfgadkakj', patient);  //previous data of the patient
+
   // Get current measurements
   const height = prescriptionFormData?.height || patient?.height || '';
   const weight = prescriptionFormData?.weight || patient?.weight || '';
   const headCircumference = prescriptionFormData?.headCircumference || patient?.headCircumference || '';
-  const age = prescriptionFormData?.age || patient?.patientAge || patient?.age || '';
+  const previousAge = patient?.age || ''; // Age of the patient
+
+  const age = patient?.age || ''; // Age of the patient
   const gender = patient?.gender || 'male';
+
+  const dob = patient?.dob || patient?.dateOfBirth || ''; // DOB of the patient
   
   // Growth history state
   const [growthHistory, setGrowthHistory] = useState([]);
@@ -242,8 +248,48 @@ const GrowthChart = () => {
     }
   }, [patient?.id]);
   
-  // Calculate age in days from age string (handles years, months, or days)
-  const calculateAgeInDays = (ageStr) => {
+  // Parse DOB from dd-mm-yyyy format
+  const parseDOB = useCallback((dobStr) => {
+    if (!dobStr) return null;
+    
+    // Handle dd-mm-yyyy format
+    const parts = dobStr.split('-');
+    if (parts.length === 3) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed in JS Date
+      const year = parseInt(parts[2], 10);
+      
+      if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+        const date = new Date(year, month, day);
+        if (date.getDate() === day && date.getMonth() === month && date.getFullYear() === year) {
+          return date;
+        }
+      }
+    }
+    
+    // Fallback: try parsing as ISO date string
+    const date = new Date(dobStr);
+    if (!isNaN(date.getTime())) {
+      return date;
+    }
+    
+    return null;
+  }, []);
+  
+  // Calculate age in days from DOB
+  const calculateAgeInDaysFromDOB = useCallback((dobStr) => {
+    const birthDate = parseDOB(dobStr);
+    if (!birthDate) return 0;
+    
+    const today = new Date();
+    const diffTime = today - birthDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    return Math.max(0, diffDays);
+  }, [parseDOB]);
+  
+  // Calculate age in days from age string (handles years, months, or days) - fallback
+  const calculateAgeInDays = useCallback((ageStr) => {
     if (!ageStr) return 0;
     const ageNum = parseFloat(ageStr);
     if (isNaN(ageNum)) return 0;
@@ -258,7 +304,21 @@ const GrowthChart = () => {
     } else {
       return Math.round(ageNum);
     }
-  };
+  }, []);
+  
+  // Get current age in days (prefer DOB, fallback to age string)
+  const currentAgeInDays = useMemo(() => {
+    if (dob) {
+      const ageFromDOB = calculateAgeInDaysFromDOB(dob);
+      if (ageFromDOB > 0) return ageFromDOB;
+    }
+    return calculateAgeInDays(age);
+  }, [dob, age, calculateAgeInDaysFromDOB, calculateAgeInDays]);
+  
+  // Get current age in months
+  const currentAgeInMonths = useMemo(() => {
+    return currentAgeInDays / 30.44;
+  }, [currentAgeInDays]);
   
   // Format age display
   const formatAge = (ageInDays) => {
@@ -277,18 +337,17 @@ const GrowthChart = () => {
   
   // Add current measurement to history when form data changes
   useEffect(() => {
-    if (height && weight && age && patient?.id) {
-      const ageInDays = calculateAgeInDays(age);
+    if (height && weight && patient?.id && currentAgeInDays > 0) {
       const newRecord = {
         date: format(new Date(), 'M/d/yyyy'),
-        ageInDays: ageInDays,
-        ageFormatted: formatAge(ageInDays),
+        ageInDays: currentAgeInDays,
+        ageFormatted: formatAge(currentAgeInDays),
         weight: parseFloat(weight),
         height: parseFloat(height),
         headCircumference: headCircumference ? parseFloat(headCircumference) : null,
-        weightPercentile: calculatePercentile(parseFloat(weight), ageInDays, 'weight', gender),
-        heightPercentile: calculatePercentile(parseFloat(height), ageInDays, 'height', gender),
-        headCircumferencePercentile: headCircumference ? calculatePercentile(parseFloat(headCircumference), ageInDays, 'headCircumference', gender) : null,
+        weightPercentile: calculatePercentile(parseFloat(weight), currentAgeInDays, 'weight', gender),
+        heightPercentile: calculatePercentile(parseFloat(height), currentAgeInDays, 'height', gender),
+        headCircumferencePercentile: headCircumference ? calculatePercentile(parseFloat(headCircumference), currentAgeInDays, 'headCircumference', gender) : null,
         notes: ''
       };
       
@@ -308,7 +367,7 @@ const GrowthChart = () => {
         return prev;
       });
     }
-  }, [height, weight, headCircumference, age, patient?.id, gender]);
+  }, [height, weight, headCircumference, currentAgeInDays, patient?.id, gender]);
   
   // Calculate percentile (simplified - use actual WHO data in production)
   const calculatePercentile = (value, ageInDays, type, gender) => {
@@ -325,60 +384,8 @@ const GrowthChart = () => {
   
   // Prepare chart data
   const chartData = useMemo(() => {
-    // If we have current data but no history, create a single data point
-    if (growthHistory.length === 0 && height && weight && age) {
-      const ageInDays = calculateAgeInDays(age);
-      const singleRecord = {
-        ageInDays,
-        weight: parseFloat(weight),
-        height: parseFloat(height),
-        headCircumference: headCircumference ? parseFloat(headCircumference) : null,
-      };
-      
-      // Generate age points in months (0 to 24 months)
-      const agePoints = Array.from({ length: 25 }, (_, i) => i);
-      
-      const weightPercentiles = {
-        p3: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'weight', gender)?.[3] || null),
-        p15: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'weight', gender)?.[15] || null),
-        p50: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'weight', gender)?.[50] || null),
-        p85: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'weight', gender)?.[85] || null),
-        p97: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'weight', gender)?.[97] || null),
-      };
-      
-      const heightPercentiles = {
-        p3: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'height', gender)?.[3] || null),
-        p15: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'height', gender)?.[15] || null),
-        p50: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'height', gender)?.[50] || null),
-        p85: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'height', gender)?.[85] || null),
-        p97: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'height', gender)?.[97] || null),
-      };
-      
-      const headCircumferencePercentiles = {
-        p3: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'headCircumference', gender)?.[3] || null),
-        p15: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'headCircumference', gender)?.[15] || null),
-        p50: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'headCircumference', gender)?.[50] || null),
-        p85: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'headCircumference', gender)?.[85] || null),
-        p97: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'headCircumference', gender)?.[97] || null),
-      };
-      
-      return {
-        agePoints,
-        sortedHistory: [singleRecord],
-        weightPercentiles,
-        heightPercentiles,
-        headCircumferencePercentiles,
-      };
-    }
-    
-    if (growthHistory.length === 0) return null;
-    
-    const sortedHistory = [...growthHistory].sort((a, b) => a.ageInDays - b.ageInDays);
-    const maxAgeInDays = Math.max(...sortedHistory.map(h => h.ageInDays), 720);
-    const maxAgeInMonths = Math.min(Math.ceil(maxAgeInDays / 30.44), 24);
-    
-    // Generate percentile curves in months (0 to 24 months)
-    const agePoints = Array.from({ length: maxAgeInMonths + 1 }, (_, i) => i);
+    // Generate age points in months (0 to 24 months)
+    const agePoints = Array.from({ length: 25 }, (_, i) => i);
     
     const weightPercentiles = {
       p3: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'weight', gender)?.[3] || null),
@@ -404,14 +411,37 @@ const GrowthChart = () => {
       p97: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'headCircumference', gender)?.[97] || null),
     };
     
+    // Get current patient data point if measurements are available
+    const currentPatientData = (() => {
+      if (currentAgeInDays > 0 && currentAgeInMonths <= 24) {
+        const data = {
+          ageInMonths: currentAgeInMonths,
+          weight: weight ? parseFloat(weight) : null,
+          height: height ? parseFloat(height) : null,
+          headCircumference: headCircumference ? parseFloat(headCircumference) : null,
+        };
+        // Only return if at least one measurement exists
+        if (data.weight || data.height || data.headCircumference) {
+          return data;
+        }
+      }
+      return null;
+    })();
+    
+    // Get sorted history
+    const sortedHistory = growthHistory.length > 0 
+      ? [...growthHistory].sort((a, b) => a.ageInDays - b.ageInDays)
+      : [];
+    
     return {
       agePoints,
       sortedHistory,
       weightPercentiles,
       heightPercentiles,
       headCircumferencePercentiles,
+      currentPatientData,
     };
-  }, [growthHistory, gender, height, weight, age, headCircumference]);
+  }, [growthHistory, gender, height, weight, headCircumference, currentAgeInDays, currentAgeInMonths]);
   
   // Chart options
   const getChartOptions = (title, color, yAxisMin, yAxisMax, yAxisStep, percentileColors) => ({
@@ -525,6 +555,23 @@ const GrowthChart = () => {
     const agePoints = Array.from({ length: 25 }, (_, i) => i);
     const gender = patient?.gender || 'male';
     
+    // Get current patient data point if measurements are available
+    const currentPatientData = (() => {
+      if (currentAgeInDays > 0 && currentAgeInMonths <= 24) {
+        const data = {
+          ageInMonths: currentAgeInMonths,
+          weight: weight ? parseFloat(weight) : null,
+          height: height ? parseFloat(height) : null,
+          headCircumference: headCircumference ? parseFloat(headCircumference) : null,
+        };
+        // Only return if at least one measurement exists
+        if (data.weight || data.height || data.headCircumference) {
+          return data;
+        }
+      }
+      return null;
+    })();
+    
     return {
       agePoints,
       sortedHistory: [],
@@ -549,8 +596,9 @@ const GrowthChart = () => {
         p85: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'headCircumference', gender)?.[85] || null),
         p97: agePoints.map(ageInMonths => getPercentileData(ageInMonths * 30.44, 'headCircumference', gender)?.[97] || null),
       },
+      currentPatientData,
     };
-  }, [patient?.gender]);
+  }, [patient?.gender, currentAgeInDays, currentAgeInMonths, height, weight, headCircumference]);
 
   const displayChartData = chartData || defaultChartData;
 
@@ -601,7 +649,7 @@ const GrowthChart = () => {
                         x: age,
                         y: displayChartData.weightPercentiles.p3[i],
                       })),
-                      color: '#6366f1',
+                      // color: '#6366f1',
                     },
                     {
                       name: '15%',
@@ -635,6 +683,25 @@ const GrowthChart = () => {
                       })),
                       color: '#e0e7ff',
                     },
+                    ...(displayChartData.currentPatientData?.weight ? [{
+                      name: 'Patient',
+                      data: [
+                        { x: -1.9, y: 0 },
+                        {
+                          x: displayChartData.currentPatientData.ageInMonths,
+                          y: displayChartData.currentPatientData.weight,
+                        }
+                      ],
+                      color: '#ef4444',
+                      stroke: {
+                        width: 2,
+                        curve: 'straight',
+                      },
+                      markers: {
+                        size: 0,
+                        hover: { size: 0 },
+                      },
+                    }] : []),
                   ]}
                 />
               </div>
@@ -688,6 +755,25 @@ const GrowthChart = () => {
                       })),
                       color: '#fee2e2',
                     },
+                    ...(displayChartData.currentPatientData?.height ? [{
+                      name: 'Patient',
+                      data: [
+                        { x: -3.3, y: 0 },
+                        {
+                          x: displayChartData.currentPatientData.ageInMonths,
+                          y: displayChartData.currentPatientData.height,
+                        }
+                      ],
+                      color: '#3b82f6',
+                      stroke: {
+                        width: 2,
+                        curve: 'straight',
+                      },
+                      markers: {
+                        size: 0,
+                        hover: { size: 0 },
+                      },
+                    }] : []),
                   ]}
                 />
               </div>
@@ -741,11 +827,32 @@ const GrowthChart = () => {
                       })),
                       color: '#dcfce7',
                     },
+                    ...(displayChartData.currentPatientData?.headCircumference ? [{
+                      name: 'Patient',
+                      data: [
+                        { x: -3, y: 0 },
+                        {
+                          x: displayChartData.currentPatientData.ageInMonths,
+                          y: displayChartData.currentPatientData.headCircumference,
+                        }
+                      ],
+                      color: '#f59e0b',
+                      stroke: {
+                        width: 2,
+                        curve: 'straight',
+                      },
+                      markers: {
+                        size: 0,
+                        hover: { size: 0 },
+                      },
+                    }] : []),
                   ]}
                 />
               </div>
             </div>
           </div>
+
+
 
           {/* Growth History Table */}
           {growthHistory.length > 0 && (
@@ -797,7 +904,7 @@ const GrowthChart = () => {
                         </td>
                         <td style={{ border: '1px solid #ecedf4', padding: '10px', backgroundColor: '#fff' }}>
                           {record.ageFormatted}
-                        </td>
+                        </td> 
                         <td style={{ border: '1px solid #ecedf4', padding: '10px', backgroundColor: '#fff' }}>
                           {record.weight?.toFixed ? record.weight.toFixed(2) : record.weight}
                         </td>
@@ -841,9 +948,6 @@ const GrowthChart = () => {
                     ))}
                   </tbody>
                 </table>
-              </div>
-              <div className="mt-3">
-                <small className="text-muted" style={{ fontSize: '0.75rem' }}>*Percentiles based on WHO growth standards</small>
               </div>
             </div>
           )}

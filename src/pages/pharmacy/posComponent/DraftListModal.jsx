@@ -16,14 +16,14 @@ const DraftListModal = ({
     <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
       <div className="modal-dialog modal-dialog-centered modal-lg">
         <div className="modal-content">
-          <div className="modal-header text-white" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
-            <h5 className="modal-title d-flex align-items-center">
+          <div className="modal-header d-flex justify-content-between align-items-center bg-white" style={{ borderBottom: '1px solid #e5e7eb' }}>
+            <h4 className="fw-bold d-flex align-items-center mb-0" style={{ color: '#2d3748' }}>
               <FaFolderOpen className="me-2" />
               Saved Drafts ({drafts.length})
-            </h5>
+            </h4>
             <button 
               type="button" 
-              className="btn-close btn-close-white"
+              className="btn-close"
               onClick={() => setShowDraftsList(false)}
             ></button>
           </div>

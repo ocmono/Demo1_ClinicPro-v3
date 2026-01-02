@@ -95,6 +95,8 @@ export const PrescriptionProvider = ({ children }) => {
           image_urls: patient.image_urls || [],
           appointment_time: patient.appointment_time || "",
           appointment_date: patient.appointment_date || "",
+          patientdob: patient.dob || "N/A",
+          headcircumference: patient?.headcircumference || "N/A",
         };
       });
 
@@ -151,8 +153,16 @@ export const PrescriptionProvider = ({ children }) => {
    * ================================================================== */
 
   // Add prescription field updates
+  // Handles both single field updates: updatePrescriptionFormField("height", "150")
+  // and multiple field updates: updatePrescriptionFormField({ height: "150", weight: "20" })
   const updatePrescriptionFormField = (field, value) => {
-    setPrescriptionFormData((prev) => ({ ...prev, [field]: value }));
+    if (typeof field === 'object' && field !== null && value === undefined) {
+      // Handle object update: updatePrescriptionFormField({ height: "150", weight: "20" })
+      setPrescriptionFormData((prev) => ({ ...prev, ...field }));
+    } else {
+      // Handle single field update: updatePrescriptionFormField("height", "150")
+      setPrescriptionFormData((prev) => ({ ...prev, [field]: value }));
+    }
     // toast.info(`Updated ${field} successfully!`); // Show info toast on field update
   };
 

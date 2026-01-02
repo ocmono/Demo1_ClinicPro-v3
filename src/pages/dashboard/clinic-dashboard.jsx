@@ -980,6 +980,7 @@ const DashboardClinic = () => {
                               <span className={`badge bg-${apt.status === 'Accepted' || apt.status === 'approved' ? 'success' :
                                 apt.status === 'Pending' || apt.status === 'pending' ? 'warning' :
                                   apt.status === 'Completed' || apt.status === 'completed' || apt.status === 'Done' || apt.status === 'done' ? 'info' :
+                                    apt.status === 'Rejected' || apt.status === 'rejected' ? 'danger' :
                                     'secondary'
                                 }`}>
                                 {apt.status}

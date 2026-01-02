@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { usePatient } from '../../context/PatientContext';
 import { useMedicines } from '../../context/MedicinesContext';
-import { FaSearch, FaDownload, FaEye, FaShoppingCart, FaRupeeSign, FaCheckCircle, FaSyncAlt,FaReceipt,FaTimes} from 'react-icons/fa';
+import { FaSearch, FaDownload, FaEye, FaShoppingCart, FaRupeeSign, FaCheckCircle, FaSyncAlt, FaReceipt } from 'react-icons/fa';
+import Table from '@/components/shared/table/Table';
+import PageHeader from '@/components/shared/pageHeader/PageHeader';
+import Footer from '@/components/shared/Footer';
+import { FiEye } from 'react-icons/fi'
 
 // Constants for API endpoints and configuration
 const API_ENDPOINTS = {
@@ -273,25 +277,235 @@ const SalesHistory = () => {
     });
   }, [salesData, searchTerm, filterStatus]);
 
+  // Prepare table data for the theme table
+  const tableData = useMemo(() => {
+    return filteredSales.map((sale) => ({
+      id: sale.id,
+      invoice_no: sale.invoice_no,
+      patient_id: sale.patient_id,
+      grand_total: sale.grand_total,
+      total_amount: sale.total_amount,
+      payment: sale.payment,
+      status: sale.status,
+      items: sale.items,
+      created_at: sale.created_at,
+      // Add computed fields for easier access
+      patientInfo: getPatientInfo(sale.patient_id),
+      statusBadge: getStatusBadge(sale),
+      paymentMethods: getPaymentMethods(sale),
+      originalSale: sale
+    }));
+  }, [filteredSales, getPatientInfo, getStatusBadge, getPaymentMethods]);
+
+  // Define table columns
+  const columns = useMemo(() => [
+    {
+      accessorKey: 'id',
+      header: 'ID',
+      cell: (info) => (
+        <span className="badge bg-light text-dark fw-bold">#{info.getValue()}</span>
+      ),
+      meta: {
+        headerClassName: 'width-80',
+      },
+    },
+    {
+      accessorKey: 'invoice_no',
+      header: 'Invoice No',
+      cell: (info) => (
+        <span className="fw-bold text-primary">#{info.getValue()}</span>
+      ),
+    },
+    {
+      accessorKey: 'patient_id',
+      header: 'Patient',
+      cell: ({ row }) => {
+        const patientInfo = row.original.patientInfo;
+        const patientId = row.original.patient_id;
+
+        return (
+          <div>
+            {patientInfo ?
+              `${patientInfo.first_name || ''} ${patientInfo.last_name || ''}`.trim() || `Patient #${patientId}`
+              : patientId || "Walk-in Customer"
+            }
+            {patientInfo && (
+              <div className="text-muted small">ID: {patientId}</div>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'grand_total',
+      header: 'Amount',
+      cell: ({ row }) => {
+        const grandTotal = row.original.grand_total;
+        const totalAmount = row.original.total_amount;
+
+        return (
+          <div>
+            <div className="fw-bold text-success">₹{grandTotal}</div>
+            {totalAmount !== grandTotal && (
+              <div className="text-muted small text-decoration-line-through">₹{totalAmount}</div>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'paymentMethods',
+      header: 'Payment Method',
+      cell: (info) => (
+        <div className="text-dark fw-medium text-uppercase">
+          {info.getValue()}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'statusBadge',
+      header: 'Status',
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: 'items',
+      header: 'Items',
+      cell: (info) => (
+        <span className="badge bg-light text-dark border">
+          {info.getValue()?.length || 0} items
+        </span>
+      ),
+    },
+    {
+      accessorKey: 'created_at',
+      header: 'Date',
+      cell: (info) => {
+        const dateValue = info.getValue();
+        return (
+          <div>
+            {formatDate(dateValue)}
+            <div className="text-muted small">
+              {formatDateTime(dateValue).split(' ')[1]} {/* Time only */}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => (
+        <button
+          className="avatar-text avatar-md"
+          onClick={() => setSelectedSale(row.original.originalSale)}
+        >
+          <FiEye />
+        </button>
+      ),
+      meta: {
+        headerClassName: 'width-100',
+      },
+    },
+  ], [setSelectedSale]);
+
+  // Custom card header with filters
+  const cardHeader = useMemo(() => (
+    <div className="d-flex w-100 justify-content-between align-items-center">
+      <h5 className="card-title">Sales History</h5>
+      <div className="row g-2 align-items-center">
+        {/* Status Filter */}
+        <div className="col-md-6">
+          <select
+            className="form-select form-select-md"
+            style={{ padding: "7px 15px", fontSize: "15px" }}
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value={STATUS_FILTERS.ALL} style={{ fontSize: "15px" }}>All Status</option>
+            <option value={STATUS_FILTERS.PAID} style={{ fontSize: "15px" }}>Paid</option>
+            <option value={STATUS_FILTERS.PENDING} style={{ fontSize: "15px" }}>Pending</option>
+            <option value={STATUS_FILTERS.REFUNDED} style={{ fontSize: "15px" }}>Refunded</option>
+          </select>
+        </div>
+
+        {/* Export Button */}
+        <div className="col-md-6">
+          <button className="btn btn-outline-secondary w-100">
+            <FaDownload className="me-2" />
+            Export
+          </button>
+        </div>
+      </div>
+    </div>
+  ), [filterStatus, searchTerm]);
+
+  // Handle print functionality
+  const handlePrint = () => {
+    const printWindow = window.open("", "_blank");
+    const printHTML = `
+      <html>
+        <head>
+          <title>Sales History</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; margin: 0; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .text-center { text-align: center; }
+          </style>
+        </head>
+        <body>
+          <h2 class="text-center">Sales History Report</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Invoice No</th>
+                <th>Patient</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Items</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredSales.map((sale) => `
+                <tr>
+                  <td>#${sale.invoice_no}</td>
+                  <td>${getPatientInfo(sale.patient_id)?.name || sale.patient_id || "Walk-in"}</td>
+                  <td>₹${sale.grand_total}</td>
+                  <td>${getPaymentMethods(sale)}</td>
+                  <td>${sale.status || 'N/A'}</td>
+                  <td>${sale.items?.length || 0} items</td>
+                  <td>${formatDate(sale.created_at)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(printHTML);
+    printWindow.document.close();
+
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    };
+  };
+
   // Memoized modal patient info
-  const modalPatientInfo = useMemo(() => 
+  const modalPatientInfo = useMemo(() =>
     selectedSale ? getPatientInfo(selectedSale.patient_id) : null,
     [selectedSale, getPatientInfo]
   );
 
-  // Loading component
-  const LoadingSpinner = () => (
-    <div className="d-flex flex-column justify-content-center align-items-center min-vh-50 text-primary">
-      <div className="spinner-border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
-      <p className="mt-3">Loading Sales History...</p>
-    </div>
-  );
-
   // Statistics Cards Component
   const StatsCards = React.memo(({ stats }) => (
-    <div className="row g-4 mb-4">
+    <div className="row g-4 ">
       {[
         { icon: FaShoppingCart, value: stats.totalSales, label: 'Total Sales', color: 'primary' },
         { icon: FaRupeeSign, value: `₹${stats.totalRevenue.toFixed(2)}`, label: 'Total Revenue', color: 'success' },
@@ -299,9 +513,9 @@ const SalesHistory = () => {
         { icon: FaSyncAlt, value: stats.refundedOrders, label: 'Refunded Orders', color: 'warning' }
       ].map((card, index) => (
         <div key={index} className="col-xl-3 col-md-6">
-          <div className="card stat-card h-100 border-0 shadow-sm hover-shadow transition-all">
-            <div className="card-body d-flex align-items-center">
-              <div className={`bg-${card.color} bg-gradient rounded-3 d-flex align-items-center justify-content-center me-3`} style={{width: '60px', height: '60px'}}>
+          <div className="card stat-card border-0 shadow-sm hover-shadow transition-all mb-3">
+            <div className="card-body d-flex align-items-center     ">
+              <div className={`bg-${card.color} bg-gradient rounded-3 d-flex align-items-center justify-content-center me-3`} style={{ width: '60px', height: '60px' }}>
                 <card.icon className="text-white fs-4" />
               </div>
               <div>
@@ -314,117 +528,6 @@ const SalesHistory = () => {
       ))}
     </div>
   ));
-
-  // Controls Section Component
-  const ControlsSection = React.memo(({ searchTerm, setSearchTerm, filterStatus, setFilterStatus }) => (
-
-    <div className="card-body py-3">
-    <div className="row g-2 align-items-center">
-  
-      {/* Search */}
-      <div className="col-md-9">
-        <div className="position-relative">
-          <FaSearch className="position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" />
-          <input
-            type="text"
-            className="form-control ps-5 py-2"
-            placeholder="Search invoice / patient ID"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
-  
-      {/* Status Filter */}
-      <div className="col-md-2">
-        <select 
-          className="form-select py-2"
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-        >
-          <option value={STATUS_FILTERS.ALL}>All Status</option>
-          <option value={STATUS_FILTERS.PAID}>Paid</option>
-          <option value={STATUS_FILTERS.PENDING}>Pending</option>
-          <option value={STATUS_FILTERS.REFUNDED}>Refunded</option>
-        </select>
-      </div>
-  
-      {/* Export Button */}
-      <div className="col-md-1">
-        <button className="btn btn-outline-secondary w-100 py-2">
-          <FaDownload className="me-2" />
-          Export
-        </button>
-      </div>
-  
-    </div>
-  </div>
-  ));
-
-  // Sales Table Row Component
-  const SalesTableRow = React.memo(({ sale, getPatientInfo, getStatusBadge, getPaymentMethods, onViewClick }) => {
-    const patientInfo = getPatientInfo(sale.patient_id);
-    
-    return (
-      <tr className="align-middle">
-        <td className="px-3">
-          <strong className="text-dark">#{sale.id}</strong>
-        </td>
-        <td className="px-3">
-          <strong className="text-dark">#{sale.invoice_no}</strong>
-        </td>
-        <td className="px-3">
-          <div>
-            {patientInfo ? 
-              `${patientInfo.first_name || ''} ${patientInfo.last_name || ''}`.trim() || `Patient #${sale.patient_id}` 
-              : sale.patient_id || "Walk-in Customer"
-            }
-            {patientInfo && (
-              <div className="text-muted small">ID: {sale.patient_id}</div>
-            )}
-          </div>
-        </td>
-        <td className="px-3">
-          <div>
-            <div className="fw-bold text-success">₹{sale.grand_total}</div>
-            {sale.total_amount !== sale.grand_total && (
-              <div className="text-muted small text-decoration-line-through">₹{sale.total_amount}</div>
-            )}
-          </div>
-        </td>
-        <td className="px-3">
-          <div className="text-dark fw-medium text-uppercase">
-            {getPaymentMethods(sale)}
-          </div>
-        </td>
-        <td className="px-3">
-          {getStatusBadge(sale)}
-        </td>
-        <td className="px-3">
-          <span className="badge bg-light text-dark border">
-            {sale.items?.length || 0} items
-          </span>
-        </td>
-        <td className="px-3">
-          <div>
-            {formatDate(sale.created_at)}
-            <div className="text-muted small">
-              {formatDateTime(sale.created_at).split(' ')[1]} {/* Time only */}
-            </div>
-          </div>
-        </td>
-        <td className="px-3">
-          <button 
-            className="btn btn-primary btn-sm"
-            onClick={() => onViewClick(sale)}
-          >
-            <FaEye className="me-1" />
-            View
-          </button>
-        </td>
-      </tr>
-    );
-  });
 
   // Sale Details Modal Component
   const SaleDetailsModal = React.memo(({ selectedSale, modalPatientInfo, getItemDetails, onClose }) => {
@@ -640,72 +743,57 @@ const SalesHistory = () => {
   ));
 
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <>
+        <PageHeader>
+          <h4 className="mb-1 fw-bold">Sales History</h4>
+          <p className="text-muted mb-0">Loading sales data...</p>
+        </PageHeader>
+        <div className="main-content">
+          <div className="d-flex flex-column justify-content-center align-items-center min-vh-50 text-primary">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3">Loading Sales History...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
   return (
-    <div className="container-fluid py-4 bg-light min-vh-100">
-      <StatsCards stats={stats} />
-      
+    <>
+      <PageHeader />
 
+      <div className="main-content">
+        {/* Statistics Cards */}
+        <StatsCards stats={stats} />
 
-      {/* Sales Table */}
-      <div className="card border-0 shadow-sm">
-        <div className="card-body p-0">
-        <ControlsSection 
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
-      />
-          <div className="table-responsive">
-            <table className="table table-hover mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th className="px-3 py-3">ID</th>
-                  <th className="px-3 py-3">Invoice No</th>
-                  <th className="px-3 py-3">Patient</th>
-                  <th className="px-3 py-3">Amount</th>
-                  <th className="px-3 py-3">Payment Method</th>
-                  <th className="px-3 py-3">Status</th>
-                  <th className="px-3 py-3">Items</th>
-                  <th className="px-3 py-3">Date</th>
-                  <th className="px-3 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredSales.length === 0 ? (
-                  <tr>
-                    <td colSpan="12" className="text-center py-5">
-                      <FaReceipt className="display-4 text-muted mb-2" />
-                      <p className="text-muted mb-0">No sales records found</p>
-                    </td>
-                  </tr>
-                ) : (
-                  filteredSales.map((sale) => (
-                    <SalesTableRow
-                      key={sale.id}
-                      sale={sale}
-                      getPatientInfo={getPatientInfo}
-                      getStatusBadge={getStatusBadge}
-                      getPaymentMethods={getPaymentMethods}
-                      onViewClick={setSelectedSale}
-                    />
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {/* Sales Table using Theme Table */}
+        <Table
+          data={tableData}
+          columns={columns}
+          onRefresh={fetchData}
+          onPrint={handlePrint}
+          showPrint={true}
+          emptyMessage="No sales records found"
+          cardHeader={cardHeader}
+          defaultSorting={[{ id: 'id', desc: true }]}
+          isRefreshing={loading}
+        />
+
+        {/* Sale Details Modal */}
+        <SaleDetailsModal
+          selectedSale={selectedSale}
+          modalPatientInfo={modalPatientInfo}
+          getItemDetails={getItemDetails}
+          onClose={() => setSelectedSale(null)}
+        />
       </div>
 
-      <SaleDetailsModal
-        selectedSale={selectedSale}
-        modalPatientInfo={modalPatientInfo}
-        getItemDetails={getItemDetails}
-        onClose={() => setSelectedSale(null)}
-      />
-    </div>
+      <Footer />
+    </>
   );
 };
 

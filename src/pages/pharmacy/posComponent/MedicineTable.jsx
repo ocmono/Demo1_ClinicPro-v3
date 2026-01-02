@@ -13,10 +13,10 @@ const MedicineTable = ({
 
   return (
     <div className="table-responsive">
-      <table className="table table-hover table-striped align-middle">
-        <thead className="table-light">
+      <table className="table table-hover align-middle mb-0" style={{ fontSize: '13px' }}>
+        <thead style={{ backgroundColor: '#fafbfc' }}>
           <tr>
-            <th width="3%">
+            <th width="3%" style={{ fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', padding: '10px 15px', borderBottom: '1px solid #e9ecef' }}>
               <SortableHeader 
                 label="ID"
                 sortKey="id"
@@ -25,7 +25,7 @@ const MedicineTable = ({
                 getSortIcon={getSortIcon}
               />
             </th>
-            <th width="20%">
+            <th width="20%" style={{ fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', padding: '10px 15px', borderBottom: '1px solid #e9ecef' }}>
               <SortableHeader 
                 label="Medicine"
                 sortKey="name"
@@ -34,7 +34,7 @@ const MedicineTable = ({
                 getSortIcon={getSortIcon}
               />
             </th>
-            <th width="20%">
+            <th width="20%" style={{ fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', padding: '10px 15px', borderBottom: '1px solid #e9ecef' }}>
               <SortableHeader 
                 label="Brand"
                 sortKey="brand"
@@ -43,8 +43,8 @@ const MedicineTable = ({
                 getSortIcon={getSortIcon}
               />
             </th>
-            <th width="20%">SKU</th>
-            <th width="10%">
+            <th width="20%" style={{ fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', padding: '10px 15px', borderBottom: '1px solid #e9ecef' }}>SKU</th>
+            <th width="10%" style={{ fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', padding: '10px 15px', borderBottom: '1px solid #e9ecef' }}>
               <SortableHeader 
                 label="Price"
                 sortKey="price"
@@ -53,7 +53,7 @@ const MedicineTable = ({
                 getSortIcon={getSortIcon}
               />
             </th>
-            <th width="9%">
+            <th width="9%" style={{ fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', padding: '10px 15px', borderBottom: '1px solid #e9ecef' }}>
               <SortableHeader 
                 label="Stock"
                 sortKey="stock"
@@ -62,8 +62,8 @@ const MedicineTable = ({
                 getSortIcon={getSortIcon}
               />
             </th>
-            <th width="8%">Status</th>
-            <th width="10%">Action</th>
+            <th width="8%" style={{ fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', padding: '10px 15px', borderBottom: '1px solid #e9ecef' }}>Status</th>
+            <th width="10%" style={{ fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', padding: '10px 15px', borderBottom: '1px solid #e9ecef' }}>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -82,7 +82,7 @@ const MedicineTable = ({
           {medicines.length === 0 && (
             <tr>
               <td colSpan="8" className="text-center py-4">
-                <div className="text-muted">
+                <div className="text-muted" style={{ fontSize: '13px' }}>
                   <FaSort className="display-4 d-block mb-2 mx-auto" />
                   No medicines found matching your search
                 </div>
@@ -100,10 +100,10 @@ const SortableHeader = ({ label, sortKey, sortConfig, onSort, getSortIcon }) => 
   <div 
     className="d-flex align-items-center cursor-pointer"
     onClick={() => onSort(sortKey)}
-    style={{ cursor: 'pointer' }}
+    style={{ cursor: 'pointer', fontSize: '11px', fontWeight: '600' }}
   >
     {label}
-    <span className="ms-1">
+    <span className="ms-1" style={{ fontSize: '10px' }}>
       {getSortIcon ? getSortIcon(sortKey) : <FaSort className="text-muted" />}
     </span>
   </div>
@@ -111,41 +111,56 @@ const SortableHeader = ({ label, sortKey, sortConfig, onSort, getSortIcon }) => 
 
 // Medicine Table Row Component
 const MedicineTableRow = ({ medicine, variation, variationIndex, onAddToCart }) => (
-  <tr className={Number(variation?.stock || 0) <= 0 ? 'table-danger' : ''}>
-    <td>
-      <small className="text-muted">#{medicine?.id || 'N/A'}</small>
+  <tr 
+    className={Number(variation?.stock || 0) <= 0 ? 'table-danger' : ''}
+    style={{ 
+      borderBottom: '1px solid #f0f0f0',
+      fontSize: '13px'
+    }}
+  >
+    <td style={{ padding: '12px 15px' }}>
+      <small className="text-muted" style={{ fontSize: '12px' }}>#{medicine?.id || 'N/A'}</small>
     </td>
-    <td>
+    <td style={{ padding: '12px 15px' }}>
       <div>
-        <strong>{medicine?.name || 'Unknown Medicine'}</strong>
+        <div style={{ fontSize: '13px', fontWeight: '600', color: '#2d3748' }}>
+          {medicine?.name || 'Unknown Medicine'}
+        </div>
         {medicine?.medicine_type && (
-          <small className="d-block text-muted">
+          <small className="d-block text-muted" style={{ fontSize: '11px', marginTop: '2px' }}>
             {medicine.medicine_type}
           </small>
         )}
       </div>
     </td>
-    <td>{medicine?.brand || 'No brand'}</td>
-    <td>
-      <code className="text-primary">{variation?.sku || 'No SKU'}</code>
+    <td style={{ padding: '12px 15px', fontSize: '13px', color: '#4a5568' }}>
+      {medicine?.brand || 'No brand'}
     </td>
-    <td>
-      <span className="fw-bold text-success">₹{variation?.price || '0.00'}</span>
+    <td style={{ padding: '12px 15px' }}>
+      <code className="text-primary" style={{ fontSize: '12px', backgroundColor: 'transparent', padding: 0, color: '#3182ce' }}>
+        {variation?.sku || 'No SKU'}
+      </code>
     </td>
-    <td>
-      <StockBadge stock={variation?.stock} unit={variation?.unit} />
+    <td style={{ padding: '12px 15px' }}>
+      <span className="fw-bold text-success" style={{ fontSize: '13px', fontWeight: '600' }}>
+        ₹{variation?.price || '0.00'}
+      </span>
     </td>
-    <td>
+    <td style={{ padding: '12px 15px' }}>
+      <StockBadge stock={variation?.stock}  />
+    </td>
+    <td style={{ padding: '12px 15px' }}>
       <StatusBadge status={variation?.status} />
     </td>
-    <td>
+    <td style={{ padding: '12px 15px' }}>
       <button
-        className="btn btn-primary btn-sm d-flex align-items-center"
+        className="btn btn-light btn-sm d-flex align-items-center"
         onClick={() => onAddToCart(medicine, variationIndex)}
         disabled={Number(variation?.stock || 0) <= 0}
         title="Add to cart"
+        style={{ fontSize: '12px', padding: '4px 10px' }}
       >
-        <FaCartPlus className="me-1" />
+        <FaCartPlus className="me-1" style={{ fontSize: '11px' }} />
         Add
       </button>
     </td>
@@ -155,21 +170,49 @@ const MedicineTableRow = ({ medicine, variation, variationIndex, onAddToCart }) 
 // Stock Badge Component
 const StockBadge = ({ stock, unit }) => {
   const stockNumber = Number(stock || 0);
+  const getBadgeStyle = () => {
+    if (stockNumber > 10) return { color: '#065f46', border: 'none' };
+    if (stockNumber > 0) return { backgroundColor: '#fef3c7', color: '#92400e', border: 'none' };
+    return { backgroundColor: '#fee2e2', color: '#991b1b', border: 'none' };
+  };
+  
   return (
-    <span className={`badge ${
-      stockNumber > 10 ? 'bg-success' : 
-      stockNumber > 0 ? 'bg-warning' : 'bg-danger'
-    }`}>
-      {stockNumber} {unit || 'units'}
+    <span 
+      className="badge" 
+      style={{ 
+        ...getBadgeStyle(),
+        fontSize: '11px',
+        padding: '4px 8px',
+        fontWeight: '500',
+        borderRadius: '4px'
+      }}
+    >
+      {stockNumber}
     </span>
   );
 };
 
 // Status Badge Component
-const StatusBadge = ({ status }) => (
-  <span className={`badge ${status ? 'bg-success' : 'bg-secondary'}`}>
-    {status ? 'Active' : 'Inactive'}
-  </span>
-);
+const StatusBadge = ({ status }) => {
+  const badgeStyle = status 
+    ? { backgroundColor: '#d1fae5', color: '#065f46' }
+    : { backgroundColor: '#e5e7eb', color: '#4b5563' };
+  
+  return (
+    <span 
+      className="badge" 
+      style={{ 
+        ...badgeStyle,
+        fontSize: '11px',
+        padding: '4px 8px',
+        fontWeight: '500',
+        borderRadius: '4px',
+        border: 'none'
+      }}
+    >
+      {status ? 'Active' : 'Inactive'}
+    </span>
+  );
+};
 
 export default MedicineTable;

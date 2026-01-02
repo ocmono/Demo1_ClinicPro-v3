@@ -74,12 +74,26 @@ const CustomDatePicker = ({
     return days;
   };
 
+  const normalizeToStartOfDay = (d) => {
+    const date = new Date(d);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+
   // Check if date is selectable
   const isDateSelectable = (date) => {
     const formatted = format(date, "yyyy-MM-dd");
 
+    if (isSameDay(date, new Date())) {
+      return true;
+    }
+
     // Check buffer limits
-    if (isBefore(date, calculatedMinDate) || isAfter(date, calculatedMaxDate)) {
+    const checkDate = normalizeToStartOfDay(date);
+    const min = normalizeToStartOfDay(calculatedMinDate);
+    const max = normalizeToStartOfDay(calculatedMaxDate);
+
+    if (checkDate < min || checkDate > max) {
       return false;
     }
 

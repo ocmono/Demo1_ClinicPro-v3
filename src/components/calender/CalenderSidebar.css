@@ -496,6 +496,19 @@
   color: #1e40af;
   /* border: none; */
 }
+.appointment-summary-card.vaccine {
+  background: #f3f0ff;
+  border-left: 4px solid #6f42c1;
+}
+
+.appointment-summary-card.vaccine .card-icon {
+  color: #ffff;
+  background-color: #6f42c1;
+}
+
+.appointment-summary-card.vaccine .card-count {
+  color: #6f42c1 !important;
+}
 .custom-modal-overlay {
   position: fixed;
   top: 0;
@@ -701,4 +714,47 @@
   opacity: 1;
   transform: translateX(36%) translateY(-7px);
   /* Move up to visible position */
+}
+/* Vaccine Sort Dropdown Styles */
+.vaccine-sort-dropdown {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.vaccine-sort-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f8f9fa;
+  font-size: 12px;
+}
+
+.vaccine-sort-option:last-child {
+  border-bottom: none;
+}
+
+.vaccine-sort-option:hover {
+  background-color: #f8f9fa;
+}
+
+.vaccine-sort-option.active {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+  font-weight: 500;
+}
+
+/* Ensure the sort button doesn't affect layout */
+.section-header .btn.btn-sm.p-0 {
+  min-width: auto;
+  min-height: auto;
+  padding: 0 !important;
+}
+
+/* Clickable arrow icon */
+.section-header>h6>div>div:last-child {
+  cursor: pointer;
 }

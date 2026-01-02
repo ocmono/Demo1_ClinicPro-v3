@@ -123,12 +123,13 @@
 
 // export default Menus;
 
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useContext } from "react";
 import { FiChevronRight } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
 import { menuList } from "@/utils/fackData/menuList";
 import getIcon from "@/utils/getIcon";
 import { useAuth } from "../../../contentApi/AuthContext";
+import { NavigationContext } from "../../../contentApi/navigationProvider";
 
 const Menus = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -137,6 +138,7 @@ const Menus = () => {
     const [activeChild, setActiveChild] = useState("");
     const pathName = useLocation().pathname;
     const { user } = useAuth();
+    const { navigationOpen } = useContext(NavigationContext);
 
     const isMenuItemAllowed = (menuItem) => {
         // If no allowedRoles specified, allow for all roles
@@ -170,6 +172,7 @@ const Menus = () => {
 
     const handleMainMenu = (e, name) => {
         e.stopPropagation();
+
         if (openDropdown === name) {
             setOpenDropdown(null);
             setOpenSubDropdown(null); // Close subdropdown when main menu closes
@@ -196,7 +199,8 @@ const Menus = () => {
         setOpenSubDropdown(null);
     };
 
-    useEffect(() => {
+    // Helper function to set dropdown states based on current path
+    const setDropdownStatesFromPath = () => {
         if (pathName !== "/") {
             const pathParts = pathName.split("/").filter(part => part !== "");
             setActiveParent(pathParts[0] || "");
@@ -234,7 +238,24 @@ const Menus = () => {
             setOpenDropdown("dashboards");
             setOpenSubDropdown(null);
         }
+    };
+
+    useEffect(() => {
+        setDropdownStatesFromPath();
     }, [pathName]);
+
+    // Reset dropdown states when sidebar closes, restore when it opens
+    useEffect(() => {
+        if (!navigationOpen) {
+            // Reset dropdown states when sidebar closes
+            setOpenDropdown(null);
+            setOpenSubDropdown(null);
+        } else {
+            // Restore dropdown states when sidebar opens based on current path
+            setDropdownStatesFromPath();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [navigationOpen]);
 
     return (
         <>

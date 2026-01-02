@@ -439,6 +439,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
           <GrowthChart 
             key={`growth-chart-${patientForGrowthChart.id}`}
             patientData={patientForGrowthChart}
+            // previousPrescriptions={previousPrescriptions}
           />
         </React.Suspense>
       </div>
@@ -1422,7 +1423,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
     const medicinesTotalPrice = calculateMedicinesTotal();
     const vaccinesTotalPrice = calculateVaccinesTotal();
     const labTestsTotalPrice = calculateLabTestsTotal();
-  
+
     const previewData = {
       ...prescriptionFormData,
       localFormData, // Include local form data
@@ -1430,7 +1431,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
       previewDate: new Date().toISOString(),
       attachments: attachments,
       // Add the calculated totals
-      medicines_total_price: 0,
+      medicines_total_price: medicinesTotalPrice,
       vaccines_total_price: vaccinesTotalPrice,
       lab_tests_total_price: labTestsTotalPrice,
       consultation: formattedConsultation,
@@ -1438,7 +1439,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
       image_urls: attachments.map((attachment) => attachment.data),
       // Include individual totals for display if needed
       totals: {
-        medicines: 0,
+        medicines: medicinesTotalPrice,
         vaccines: vaccinesTotalPrice,
         labTests: labTestsTotalPrice,
         // consultation: formattedConsultation.reduce((sum, item) => sum + (item.amount || 0), 0)
@@ -2050,14 +2051,6 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
               {/* Vital Signs Section - Using debounced values */}
               <div className="row px-3 mt-4 mb-4">
                 <VitalSignsInput
-                  value={vitalSigns.height}
-                  onChange={handleVitalSignChange}
-                  icon={MdHeight}
-                  placeholder="Height"
-                  unit="cm"
-                  name="height"
-                />
-                <VitalSignsInput
                   value={vitalSigns.weight}
                   onChange={handleVitalSignChange}
                   icon={FiTrendingUp}
@@ -2065,6 +2058,24 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
                   unit="kg"
                   name="weight"
                 />
+                <VitalSignsInput
+                  value={vitalSigns.height}
+                  onChange={handleVitalSignChange}
+                  icon={MdHeight}
+                  placeholder="Height"
+                  unit="cm"
+                  name="height"
+                />
+                {showGrowthChart && (
+                  <VitalSignsInput
+                    value={vitalSigns.headCircumference}
+                    onChange={handleVitalSignChange}
+                    icon={FiCircle}
+                    placeholder="Head Circumference"
+                    unit="cm"
+                    name="headCircumference"
+                  />
+                )}
                 <VitalSignsInput
                   value={vitalSigns.bp}
                   onChange={handleVitalSignChange}
@@ -2089,16 +2100,6 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
                   unit="°F"
                   name="temperature"
                 />
-                {showGrowthChart && (
-                  <VitalSignsInput
-                    value={vitalSigns.headCircumference}
-                    onChange={handleVitalSignChange}
-                    icon={FiCircle}
-                    placeholder="Head Circumference"
-                    unit="cm"
-                    name="headCircumference"
-                  />
-                )}
               </div>
 
               {/* Growth Chart Section - Memoized */}

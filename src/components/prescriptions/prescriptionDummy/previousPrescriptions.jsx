@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { usePrescription } from '../../../contentApi/PrescriptionProvider';
 import { FiCalendar, FiFileText, FiClock, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { format, differenceInDays, differenceInWeeks } from 'date-fns';
+import { usePrescription } from '../../../contentApi/PrescriptionProvider';
 
 const PreviousPrescriptions = ({ patient }) => {
   const { fetchPrescriptionsByPatientId } = usePrescription();
@@ -442,6 +442,28 @@ const PreviousPrescriptions = ({ patient }) => {
                         </div>
                       </div>
                     )}
+
+                    {/* Head Circumference */}
+                    {/* {prescription && (
+                      <div>
+                        <small className="fw-semibold text-muted mb-1">Height:</small>
+                        <div className="small text-muted" style={{ fontSize: '0.8rem' }}>
+                          {prescription.height}
+                        </div>
+                        <small className="fw-semibold text-muted mb-1">Weight:</small>
+                        <div className="small text-muted" style={{ fontSize: '0.8rem' }}>
+                          {prescription.weight}
+                        </div>
+                        <small className="fw-semibold text-muted mb-1">BP:</small>
+                        <div className="small text-muted" style={{ fontSize: '0.8rem' }}>
+                          {prescription.bp}
+                        </div>
+                        <small className="fw-semibold text-muted mb-1">Head Circumference:</small>
+                        <div className="small text-muted" style={{ fontSize: '0.8rem' }}>
+                          {prescription.headcircumference}
+                        </div>
+                      </div>
+                    )} */}
                   </div>
                 </div>
               </div>

@@ -626,16 +626,6 @@ const AppointmentsBook = () => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patientEmail)) newErrors.patientEmail = "Valid email required";
     if (!patientAge || patientAge < 1 || patientAge > 120) newErrors.patientAge = "Age must be between 1 and 120";
 
-    if (!dob) {
-      newErrors.dob = "Date of Birth is required";
-    } else {
-      const dobDate = new Date(dob);
-      const today = new Date();
-      if (dobDate > today) {
-        newErrors.dob = "Date of Birth cannot be in the future";
-      }
-    }
-
     if (!patientAge) {
       newErrors.patientAge = "Age is required";
     } else if (isNaN(patientAge) || parseInt(patientAge) < 0) {
@@ -1248,7 +1238,7 @@ const AppointmentsBook = () => {
                           Back
                         </button>
                       </div>
-                    )};
+                    )}
                 {step === 'doctor' && (
                   <div className="booking-modern-row">
                     <div className="booking-modern-section-header-row">
