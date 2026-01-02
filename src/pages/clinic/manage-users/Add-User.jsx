@@ -321,7 +321,7 @@ const AddUser = () => {
         // { value: 'patient', label: 'Patient' },
         // { value: 'pharmacist', label: 'Pharmacist' },
         { value: 'clinic_admin', label: 'Clinic Admin' },
-        { value: 'super_admin', label: 'Super Admin' },
+        // { value: 'super_admin', label: 'Super Admin' },
         // { value: 'doctor+', label: 'Doctor +' }
     ];
 

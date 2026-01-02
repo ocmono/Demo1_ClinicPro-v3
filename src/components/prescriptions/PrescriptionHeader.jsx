@@ -60,13 +60,13 @@ const PrescriptionHeader = ({ onTimerReset , onSwitchComponent, activeComponent 
 
     return (
         <div className="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-            <button
+            {/* <button
                 type="button"
                 onClick={onSwitchComponent}
                 className="btn btn-secondary rounded-1"
             >
                 {activeComponent === 'A' ? 'Simple' : 'Color'} Template
-            </button>
+            </button> */}
             {location.pathname === '/prescriptions/create-prescription' && (
                 <>
                     <div className="d-flex align-items-center border rounded-1 px-3 py-2 bg-light" style={{ minWidth: "90px", justifyContent: "center" }}>

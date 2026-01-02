@@ -919,7 +919,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
     setLoadingSpecialties(true);
     try {
       const response = await fetch(
-        "https://bkdemo1.clinicpro.cc/speciality/speciality-list"
+        "https://bkdemo.clinicpro.cc/speciality/speciality-list"
       );
       if (!response.ok) throw new Error("Failed to fetch specialties");
       const data = await response.json();
