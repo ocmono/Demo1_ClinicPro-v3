@@ -403,6 +403,12 @@ const AppointmentTodaysTable = () => {
       header: 'WhatsApp',
       cell: ({ row }) => {
         const { appt } = row.original.actions;
+        const status = appt.status?.toLowerCase();
+
+        if (status !== 'approved') {
+          return <span className="text-muted"></span>;
+        }
+
         return (
           <span
             className="text-primary cursor-pointer"

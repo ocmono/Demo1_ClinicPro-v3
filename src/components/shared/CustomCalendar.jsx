@@ -84,10 +84,6 @@ const CustomDatePicker = ({
   const isDateSelectable = (date) => {
     const formatted = format(date, "yyyy-MM-dd");
 
-    if (isSameDay(date, new Date())) {
-      return true;
-    }
-
     // Check buffer limits
     const checkDate = normalizeToStartOfDay(date);
     const min = normalizeToStartOfDay(calculatedMinDate);
@@ -100,12 +96,6 @@ const CustomDatePicker = ({
     // Check if doctor has availability on this weekday
     if (selectedDoctor && isDateAvailable && !isDateAvailable(formatted)) {
       return false;
-    }
-
-    // Check if doctor has available slots
-    if (selectedDoctor && generateTimeSlots) {
-      const slots = generateTimeSlots(selectedDoctor, formatted);
-      return slots.length > 0;
     }
 
     return true;

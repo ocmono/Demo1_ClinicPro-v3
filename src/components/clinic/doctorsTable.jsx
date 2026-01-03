@@ -186,6 +186,29 @@ const DoctorsTable = () => {
     navigate(`/clinic/doctors/view/${doctor.id}`);
   };
 
+  const canEditDoctor = useMemo(() => {
+    if (!user) return false;
+
+    // Admins can edit anyone
+    if (["super_admin", "clinic_admin"].includes(user.role)) {
+      return true;
+    }
+
+    // Doctors can edit ONLY their own profile
+    if (user.role === "doctor") {
+      const doctorId = user.doctorId || user.id || user.doctor_id;
+      return (
+        doctorId &&
+        doctorId.toString() ===
+        (selectedDoctor?.id ||
+          selectedDoctor?.doctor_id ||
+          selectedDoctor?.doctorId)?.toString()
+      );
+    }
+
+    return false;
+  }, [user, selectedDoctor]);
+
   const handleDelete = (doctor) => {
     if (!canManageDoctor) {
       toast.error("You don't have permission to delete doctors");
@@ -375,15 +398,24 @@ const DoctorsTable = () => {
             >
               <FiEye />
             </button>
-            {canManageDoctor && (
-              <button
-                className="avatar-text avatar-md"
-                title="Edit"
-                onClick={() => handleEdit(doctor)}
-              >
-                <FiEdit3 />
-              </button>
-            )}
+            {(
+              ["super_admin", "clinic_admin"].includes(user?.role) ||
+              (
+                user?.role === "doctor" &&
+                (
+                  (doctor.id || doctor.doctor_id || doctor.doctorId)?.toString() ===
+                  (currentDoctorId)?.toString()
+                )
+              )
+            ) && (
+                <button
+                  className="avatar-text avatar-md"
+                  title="Edit"
+                  onClick={() => handleEdit(doctor)}
+                >
+                  <FiEdit3 />
+                </button>
+              )}
             {/* {canManageDoctor && (
               <button
                 className="avatar-text avatar-md text-danger"

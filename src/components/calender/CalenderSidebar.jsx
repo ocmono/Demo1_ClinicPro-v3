@@ -836,7 +836,7 @@ const CalenderSidebar = ({
                               {(() => {
                                 const displayStatus = getVaccineDisplayStatus(v, todayDate);
 
-                                return displayStatus !== "completed" ? (
+                                return displayStatus == "scheduled" ? (
                                   <button
                                     className="btn btn-sm btn-outline-info"
                                     onClick={() => handleCompleteVaccine(v.id)}

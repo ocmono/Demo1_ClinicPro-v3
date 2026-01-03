@@ -13,6 +13,7 @@
 
 .nav-user-content {
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
@@ -46,21 +47,56 @@
     line-height: 1.2;
 }
 
+.nav-user-icons {
+    display: flex;
+    align-items: center;
+    /* gap: 8px; */
+    flex-shrink: 0;
+    flex-direction: row;
+}
+
 .nav-user-logout {
     flex-shrink: 0;
     border-radius: 6px;
     transition: all 0.2s ease;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer;
+    min-width: 36px;
+    min-height: 36px;
+    line-height: 1 !important;
+    font-size: 0 !important;
+}
+
+.nav-user-logout.btn,
+.nav-user-logout.btn-link {
+    padding: 0 !important;
+    line-height: 1 !important;
 }
 
 .nav-user-logout:hover {
-    background-color: #fef2f2;
-    color: #dc2626 !important;
-    text-decoration: none;
+    background-color: #f3f4f6 !important;
+    color: #374151 !important;
+    transform: scale(1.05);
+}
+
+.nav-user-logout:active {
+    transform: scale(0.95);
+}
+
+.nav-user-logout svg {
+    display: block !important;
+    margin: 0 !important;
+    pointer-events: none;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
 }
 
 /* Ensure navbar content has proper flex layout */
@@ -86,21 +122,110 @@
 .minimenu .nav-user-content {
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 12px;
 }
 
 .minimenu .nav-user-info {
     flex-direction: column;
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .minimenu .nav-user-avatar {
     margin-right: 0;
-    margin-bottom: 4px;
+    margin-bottom: 0;
 }
 
 .minimenu .nav-user-details {
     display: none; /* Hide text when sidebar is minimized */
+}
+
+.minimenu .nav-user-icons {
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    gap: 0;
+}
+
+/* Hover state for minimized sidebar - show horizontal layout on navbar-content or m-header hover */
+.minimenu .m-header:hover ~ .navbar-content .nav-user-profile,
+.minimenu .navbar-content:hover .nav-user-profile {
+    padding: 12px 15px;
+}
+
+.minimenu .m-header:hover ~ .navbar-content .nav-user-content,
+.minimenu .navbar-content:hover .nav-user-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.minimenu .m-header:hover ~ .navbar-content .nav-user-info,
+.minimenu .navbar-content:hover .nav-user-info {
+    flex-direction: row;
+    text-align: left;
+    margin-bottom: 0;
+    width: auto;
+    flex: 1;
+}
+
+.minimenu .m-header:hover ~ .navbar-content .nav-user-avatar,
+.minimenu .navbar-content:hover .nav-user-avatar {
+    margin-right: 0;
+    margin-bottom: 0;
+}
+
+.minimenu .m-header:hover ~ .navbar-content .nav-user-details,
+.minimenu .navbar-content:hover .nav-user-details {
+    display: block;
+}
+
+.minimenu .m-header:hover ~ .navbar-content .nav-user-icons,
+.minimenu .navbar-content:hover .nav-user-icons {
+    flex-direction: row;
+    width: auto;
+    gap: 8px;
+}
+
+/* Hover state for minimized sidebar - show horizontal layout */
+.minimenu .nav-user-profile:hover {
+    padding: 12px 15px;
+}
+
+.minimenu .nav-user-profile:hover .nav-user-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.minimenu .nav-user-profile:hover .nav-user-info {
+    flex-direction: row;
+    text-align: left;
+    margin-bottom: 0;
+    width: auto;
+    flex: 1;
+}
+
+.minimenu .nav-user-profile:hover .nav-user-avatar {
+    margin-right: 8px;
+    margin-bottom: 0;
+}
+
+.minimenu .nav-user-profile:hover .nav-user-details {
+    display: block;
+}
+
+.minimenu .nav-user-profile:hover .nav-user-icons {
+    flex-direction: row;
+    width: auto;
+    gap: 8px;
 }
 
 .minimenu .nav-user-logout {
@@ -111,7 +236,8 @@
 }
 
 .minimenu .nav-user-logout:hover {
-    background: #fee2e2;
+    background: #f3f4f6;
+    transform: scale(1.05);
 }
 
 /* Mobile responsive adjustments */
@@ -191,16 +317,44 @@
     position: relative;
     border-radius: 6px;
     transition: all 0.2s ease;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer;
+    min-width: 36px;
+    min-height: 36px;
+    line-height: 1 !important;
+    font-size: 0 !important;
+}
+
+.nav-notification-btn.btn,
+.nav-notification-btn.btn-link {
+    padding: 0 !important;
+    line-height: 1 !important;
 }
 
 .nav-notification-btn:hover {
-    background-color: #f0f9ff;
+    background-color: #f0f9ff !important;
     color: #0d6efd !important;
+    transform: scale(1.05);
+}
+
+.nav-notification-btn:active {
+    transform: scale(0.95);
+}
+
+.nav-notification-btn svg {
+    display: block !important;
+    margin: 0 !important;
+    pointer-events: none;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
 }
 
 .nav-notification-btn .badge {
@@ -211,22 +365,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    top: -2px;
+    right: -2px;
 }
 
-.nav-user-logout {
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-}
-
-.nav-user-logout:hover {
-    background-color: #fef2f2;
-    color: #dc2626 !important;
-}
 
 /* Vertical divider between buttons */
 .nav-user-actions .vr {
@@ -408,21 +550,62 @@
 .minimenu .nav-user-content {
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 12px;
 }
 
 .minimenu .nav-user-info {
     flex-direction: column;
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .minimenu .nav-user-avatar {
     margin-right: 0;
-    margin-bottom: 4px;
+    margin-bottom: 0;
 }
 
 .minimenu .nav-user-details {
     display: none;
+}
+
+/* Hover state for minimized sidebar - show horizontal layout */
+.minimenu .nav-user-profile:hover {
+    padding: 12px 15px;
+}
+
+.minimenu .nav-user-profile:hover .nav-user-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.minimenu .nav-user-profile:hover .nav-user-info {
+    flex-direction: row;
+    text-align: left;
+    margin-bottom: 0;
+    width: auto;
+    flex: 1;
+}
+
+.minimenu .nav-user-profile:hover .nav-user-avatar {
+    margin-right: 0;
+    margin-bottom: 0;
+}
+
+.minimenu .nav-user-profile:hover .nav-user-details {
+    display: block;
+}
+
+.minimenu .nav-user-profile:hover .nav-user-icons {
+    flex-direction: row;
+    width: auto;
+    gap: 8px;
 }
 
 .minimenu .nav-user-actions {

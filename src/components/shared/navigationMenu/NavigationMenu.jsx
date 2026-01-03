@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FiSunrise, FiLogOut, FiUser, FiSettings, FiActivity, FiBell, FiCheck } from "react-icons/fi";
+import { FiSunrise, FiLogOut, FiUser, FiSettings, FiActivity, FiBell, FiCheck, FiMenu } from "react-icons/fi";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import Menus from './Menus';
 import './NavigationMenu.css';
@@ -9,7 +9,7 @@ import { useAuth } from '@/contentApi/AuthContext';
 import { useNotifications } from '@/context/NotificationContext';
 
 const NavigationManu = () => {
-    const { navigationOpen, setNavigationOpen } = useContext(NavigationContext)
+    const { navigationOpen, setNavigationOpen, navigationExpend, setNavigationExpend } = useContext(NavigationContext)
     const pathName = useLocation().pathname
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showNotificationSidebar, setShowNotificationSidebar] = useState(false);
@@ -120,9 +120,9 @@ const NavigationManu = () => {
                         </ul>
                             <div className="nav-user-profile mt-auto" ref={profileMenuRef}>
                                 <div className="nav-user-content">
-                                    {/* Left Side: User Avatar and Name */}
+                                    {/* Left Side: User Avatar and Name (Full Sidebar) */}
                                     <div className="nav-user-info d-flex align-items-center cursor-pointer" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-                                        <div className="nav-user-avatar me-2">
+                                        <div className={`nav-user-avatar`}>
                                             <img
                                                 src="/images/avatar/1.png"
                                                 alt={user?.name || 'User'}
@@ -130,36 +130,51 @@ const NavigationManu = () => {
                                                 style={{ width: '42px', height: '42px', objectFit: 'cover' }}
                                             />
                                         </div>
-                                        <div className="nav-user-details">
-                                            <div className="nav-user-name fw-semibold text-truncate" style={{ maxWidth: '120px' }}>
-                                                {user?.name || user?.username || 'User'}
+                                        {/* {!navigationExpend && ( */}
+                                            <div className="nav-user-details ms-2">
+                                                <div className="nav-user-name fw-semibold text-truncate"
+                                                    style={{ maxWidth: '120px' }}>
+                                                    {user?.name || user?.username || 'User'}
+                                                </div>
+                                                <div className="nav-user-role text-muted text-truncate mt-1"
+                                                    style={{ fontSize: '11px', maxWidth: '120px' }}>
+                                                    {user?.role ? user.role.replace('_', ' ').toUpperCase() : 'USER'}
+                                                </div>
                                             </div>
-                                            <div className="nav-user-role text-muted text-truncate mt-1" style={{ fontSize: '11px', maxWidth: '120px' }}>
-                                                {user?.role ? user.role.replace('_', ' ').toUpperCase() : 'USER'}
-                                            </div>
-                                        </div>
+                                        {/* )} */}
                                     </div>
 
-                                    {/* Right Side: Logout Button */}
-                                    <button
-                                        className="nav-notification-btn btn btn-link text-muted p-1 position-relative"
-                                        onClick={() => setShowNotificationSidebar(!showNotificationSidebar)}
-                                        title="Notifications"
-                                    >
-                                        <FiBell size={20} />
-                                        {unreadCount > 0 && (
-                                            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '10px', minWidth: '18px', height: '18px', paddingTop: '3px' }}>
-                                                {unreadCount > 9 ? '9+' : unreadCount}
-                                            </span>
-                                        )}
-                                    </button>
-                                    <button
-                                        className="nav-user-logout btn btn-link text-muted p-1"
-                                        onClick={handleLogout}
-                                        title="Logout"
-                                    >
-                                        <FiLogOut size={20} />
-                                    </button>
+                                    {/* Right Side: Icons */}
+                                    <div className="nav-user-icons">
+                                        <button
+                                            className="nav-notification-btn btn btn-link text-muted position-relative"
+                                            onClick={() => setShowNotificationSidebar(!showNotificationSidebar)}
+                                            title="Notifications"
+                                        >
+                                            <FiBell size={20} />
+                                            {unreadCount > 0 && (
+                                                <span className="position-absolute translate-middle badge rounded-pill bg-danger" style={{ fontSize: '10px', minWidth: '18px', height: '18px', paddingTop: '3px', top: '5px', right: '-10px' }}>
+                                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                                </span>
+                                            )}
+                                        </button>
+                                        <button
+                                            className="nav-user-logout btn btn-link text-muted"
+                                            onClick={() => {
+                                                const isMinimized = document.documentElement.classList.contains('minimenu');
+                                                if (isMinimized) {
+                                                    document.documentElement.classList.remove('minimenu');
+                                                    setNavigationExpend(false);
+                                                } else {
+                                                    document.documentElement.classList.add('minimenu');
+                                                    setNavigationExpend(true);
+                                                }
+                                            }}
+                                            title={navigationExpend ? "Show full sidebar" : "Minimize sidebar"}
+                                        >
+                                            <FiMenu size={20} />
+                                        </button>
+                                    </div>
                                 </div>
                                 {showProfileMenu && (
                                     <div className="nav-profile-dropdown">

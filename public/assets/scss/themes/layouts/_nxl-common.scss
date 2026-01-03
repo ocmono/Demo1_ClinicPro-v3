@@ -5,7 +5,7 @@
 */
 .nxl-container {
   position: relative;
-  top: $header-height;
+  // top: $header-height;
   margin-left: $navigation-width;
   min-height: calc(100vh - #{$header-height});
   transition: all 0.3s ease;
@@ -29,7 +29,8 @@
     .main-content {
       overflow-x: hidden;
       padding: 15px 15px 15px;
-	  flex: 1;
+	    flex: 1;
+      min-height: calc(100vh - 80px);
 
       .content-sidebar,
       .content-area {
@@ -44,7 +45,7 @@
         border-right: 1px solid $border-color;
 
         .content-sidebar-header {
-          height: 75px;
+          height: 80px;
           padding: 25px 30px;
           border-bottom: 1px solid $border-color;
           display: flex;
@@ -54,7 +55,7 @@
 
       .content-area {
         .content-area-header {
-          height: 75px;
+          height: 80px;
           padding: 25px 30px;
           background-color: $white;
           border-bottom: 1px solid $border-color;
@@ -86,6 +87,7 @@
 
         .content-area-body {
           padding: 15px 15px;
+          min-height: calc(100vh - 80px);
         }
       }
     }
@@ -155,14 +157,16 @@
 .page-header {
   display: flex;
   align-items: center;
-  top: $header-height;
+  top: 0;
   left: $navigation-width;
   right: 0;
   z-index: 1023;
-  min-height: 65px;
-  padding: 0 30px;
+  min-height: 80px;
+  padding: 18px 30px;
   background: $white;
-  box-shadow: $card-shadow;
+  position: sticky;
+  // box-shadow: $card-shadow;
+  border-bottom: 1px solid #e5e7eb;
 
   .page-block {
     width: calc(100% - 50%);

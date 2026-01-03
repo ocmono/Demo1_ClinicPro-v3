@@ -134,7 +134,20 @@
 }
 
 .fc-dayGridMonth-view .fc-daygrid-day-frame {
-  min-height: 108px;
+  min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  /* Prevent event container from collapsing */
+  .fc-daygrid-day-events {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  
+  .fc-daygrid-day-frame {
+    overflow: hidden;
 }
 
 /* Responsive Adjustments */
@@ -456,14 +469,30 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  background: #ede9fe;
-  color: #5b21b6;
   font-size: 15px;
   font-weight: 600;
   padding: 2px 6px;
   border-radius: 12px;
   z-index: 3;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  }
+  
+  .vaccine-badge.vaccine-scheduled {
+    background: #ede9fe;
+    color: #5b21b6;
+  }
+  
+  /* Overdue */
+  .vaccine-badge.vaccine-overdue {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  
+  /* Completed */
+  .vaccine-badge.vaccine-completed {
+    background: #dcfce7;
+    color: #166534;
 }
 
 .vaccine-icon {

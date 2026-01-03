@@ -59,7 +59,7 @@ export const PrescriptionProvider = ({ children }) => {
       const data = await response.json();
       console.log("Fetched Patients with Doctors:", data);
 
-      // Map fields properly to match what CreatePrescription needs
+      // Map fields properly to match what patientOptions expects (same format as getFilteredPatients)
       const mappedPatients = data.map((patient) => {
         // Extract name from the correct fields - adjust based on your actual API response
         const firstName = patient.firstName || patient.user?.firstName || "";
@@ -71,8 +71,10 @@ export const PrescriptionProvider = ({ children }) => {
           ? `${doctor.firstName} ${doctor.lastName}`.trim()
           : doctor.drName || "Doctor Not Assigned";
 
+        // Map to match patientOptions structure: id, patientId, patientName, patientEmail, patientPhone, patientAge, appointment_date, appointment_time, doctor, doctorId, status, appointmentId
         return {
           id: patient.id,
+          patientId: patient.id, // Add patientId to match appointment structure
           patientName: patientName,
           patientEmail: patient.email || patient.patientEmail,
           patientPhone: patient.phone || patient.contact || patient.patientPhone,
@@ -80,9 +82,15 @@ export const PrescriptionProvider = ({ children }) => {
           gender: patient.gender || "Unknown",
           // Doctor information - using optional chaining for safety
           doctor: doctorName,
-          doctor_id: patient.doctor ? patient.doctor.id : null,
+          doctorId: patient.doctor ? patient.doctor.id : null,
+          doctor_id: patient.doctor ? patient.doctor.id : null, // Keep for backward compatibility
           doctorSlug: patient.doctor?.keyword || "",
           doctorSpeciality: patient.doctor?.drSpeciality || "",
+          // Appointment information - map to match appointment structure
+          appointment_date: patient.appointment_date || "",
+          appointment_time: patient.appointment_time || "",
+          appointmentId: patient.appointmentId || null, // If available from API
+          status: patient.status || "approved", // Default to approved for regular patients
           // Additional patient information
           bloodGroup: patient.bloodGroup || "Not specified",
           weight: patient.weight || "Not specified",
@@ -93,8 +101,6 @@ export const PrescriptionProvider = ({ children }) => {
               : "No allergies",
           source: patient.source,
           image_urls: patient.image_urls || [],
-          appointment_time: patient.appointment_time || "",
-          appointment_date: patient.appointment_date || "",
           patientdob: patient.dob || "N/A",
           headcircumference: patient?.headcircumference || "N/A",
         };

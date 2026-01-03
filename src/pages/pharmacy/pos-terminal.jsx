@@ -554,7 +554,6 @@ const addSingleMedicineFromPrescription = (prescriptionMed) => {
           ? { ...item, qty: item.qty + 1 }
           : item
       ));
-      toast.info('Quantity updated in cart');
     } else {
       setCart(prev => [...prev, { 
         ...variation, 
@@ -811,7 +810,7 @@ const handlePaymentDetailChange = (field, value, finalTotal) => {
       setLoading(false);
       
       const invoiceId = result.data?.id || result.invoice_id;
-      navigate(`/pharmacy/invoices/${invoiceId}`);
+      navigate(`/pharmacy/sales-history`);
   
     } catch (error) {
       console.error('Error submitting sale:', error);

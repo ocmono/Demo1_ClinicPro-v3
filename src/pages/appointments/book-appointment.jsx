@@ -344,6 +344,23 @@ const AppointmentsBook = () => {
     };
   };
 
+  const formatSpecialties = (specialtyString) => {
+    if (!specialtyString) return '';
+
+    // If it's already a string with commas, split by comma and format
+    if (typeof specialtyString === 'string') {
+      // Split by comma, trim each part, and join with space
+      return specialtyString.split(',').map(s => s.trim()).join(' ');
+    }
+
+    // If it's an array, join with space
+    if (Array.isArray(specialtyString)) {
+      return specialtyString.join(' ');
+    }
+
+    return specialtyString;
+  };
+
   // Time slots with buffer consideration
   const timeSlots = useMemo(() => {
     if (!localDateSelected || !selectedDoctor) {
@@ -747,7 +764,7 @@ const AppointmentsBook = () => {
                   {selectedDoctor.firstName} {selectedDoctor.lastName}
                 </div>
                 <div className="role text-muted small mb-1">
-                  {selectedDoctor.drSpeciality}
+                  {formatSpecialties(selectedDoctor.drSpeciality)}
                 </div>
                 {/* Buffer Time Info */}
                 {selectedDoctor && (selectedDoctor.startBufferTime > 0 || selectedDoctor.endBufferTime > 0) && (
@@ -1279,7 +1296,7 @@ const AppointmentsBook = () => {
                                     : 'text-muted'
                                     }`}
                                 >
-                                  {doc.specialty}
+                                  {formatSpecialties(doc.specialty)}
                                 </div>
                                 {/* Show buffer info for each doctor */}
                                 {/* {(doc.startBufferTime > 0 || doc.endBufferTime > 0) && (

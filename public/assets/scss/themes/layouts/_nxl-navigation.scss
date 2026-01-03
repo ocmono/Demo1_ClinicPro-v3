@@ -76,13 +76,16 @@
 
 		.nxl-micon {
 			margin-right: 12px;
-			display: inline-block;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
 			vertical-align: middle;
-
+			flex-shrink: 0;
 
 			svg {
 				font-size: 18px;
 				stroke-width: 1.7px;
+				display: block;
 			}
 
 		}
@@ -324,13 +327,26 @@ html.minimenu {
 
 	/*minimenu-hover-expend*/
 	.nxl-navigation {
-		&:hover {
-			.navbar-content {
+		&:has(.m-header:hover) {
+			width: $navigation-width;
+			z-index: 1027;
+			box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.m-header:hover {
+			~ .navbar-content {
+				position: absolute !important;
+			}
+		}
+
+		.navbar-content {
+			&:hover {
 				position: absolute !important;
 				width: $navigation-width;
 				background-color: $white;
 				border-right: 1px solid $border-color;
 				transition: all 0.3s ease;
+				z-index: 1;
 
 				.nxl-caption,
 				.nxl-mtext,
@@ -381,6 +397,141 @@ html.minimenu {
 					label {
 						display: block;
 					}
+				}
+			}
+		}
+
+		.m-header:hover ~ .navbar-content,
+		&:hover {
+			width: $navigation-width;
+			z-index: 1027;
+			box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+
+			.logo-lg {
+				display: block;
+			}
+
+			.logo-sm {
+				display: none;
+			}
+
+			.navbar-content {
+				position: absolute !important;
+				width: $navigation-width;
+				background-color: $white;
+				border-right: 1px solid $border-color;
+				transition: all 0.3s ease;
+				z-index: 1;
+
+				.nxl-caption,
+				.nxl-mtext,
+				.nxl-arrow,
+				.card {
+					display: inline-block;
+					transition: all 0.3s ease;
+				}
+
+				.nxl-link {
+					margin: 0 15px;
+					margin-bottom: 3px;
+					padding: 10px 20px;
+				}
+
+				.nxl-submenu {
+					.nxl-link {
+						margin-bottom: 3px;
+						padding-left: 20px;
+						margin-left: 50px !important;
+						margin-right: 15px !important;
+					}
+
+					.nxl-submenu {
+						.nxl-link {
+							margin-left: 65px !important;
+						}
+
+						.nxl-submenu {
+							.nxl-link {
+								margin-left: 80px !important;
+							}
+						}
+					}
+				}
+
+				.nxl-hasmenu.nxl-trigger {
+					>.nxl-submenu {
+						display: block;
+					}
+				}
+
+				.nxl-caption {
+					&:before {
+						content: none;
+					}
+
+					label {
+						display: block;
+					}
+				}
+			}
+		}
+
+		.m-header:hover ~ .navbar-content {
+			position: absolute !important;
+			width: $navigation-width;
+			background-color: $white;
+			border-right: 1px solid $border-color;
+			transition: all 0.3s ease;
+			z-index: 1;
+
+			.nxl-caption,
+			.nxl-mtext,
+			.nxl-arrow,
+			.card {
+				display: inline-block;
+				transition: all 0.3s ease;
+			}
+
+			.nxl-link {
+				margin: 0 15px;
+				margin-bottom: 3px;
+				padding: 10px 20px;
+			}
+
+			.nxl-submenu {
+				.nxl-link {
+					margin-bottom: 3px;
+					padding-left: 20px;
+					margin-left: 50px !important;
+					margin-right: 15px !important;
+				}
+
+				.nxl-submenu {
+					.nxl-link {
+						margin-left: 65px !important;
+					}
+
+					.nxl-submenu {
+						.nxl-link {
+							margin-left: 80px !important;
+						}
+					}
+				}
+			}
+
+			.nxl-hasmenu.nxl-trigger {
+				>.nxl-submenu {
+					display: block;
+				}
+			}
+
+			.nxl-caption {
+				&:before {
+					content: none;
+				}
+
+				label {
+					display: block;
 				}
 			}
 		}

@@ -159,6 +159,23 @@ const BookingModal = ({ onClose, selectedDate, skipToCalendar }) => {
     loadAppointments();
   }, [role, user]);
 
+  const formatSpecialties = (specialtyString) => {
+    if (!specialtyString) return '';
+
+    // If it's already a string with commas, split by comma and format
+    if (typeof specialtyString === 'string') {
+      // Split by comma, trim each part, and join with space
+      return specialtyString.split(',').map(s => s.trim()).join(' ');
+    }
+
+    // If it's an array, join with space
+    if (Array.isArray(specialtyString)) {
+      return specialtyString.join(' ');
+    }
+
+    return specialtyString;
+  };
+
   // Clears steps data when click on back button
   const clearStepData = (stepName) => {
     switch (stepName) {
@@ -900,7 +917,7 @@ const BookingModal = ({ onClose, selectedDate, skipToCalendar }) => {
                           : 'text-muted'
                           }`}
                       >
-                        {doc.specialty}
+                        {formatSpecialties(doc.specialty)}
                       </div>
                       {/* {(doc.startBufferTime > 0 || doc.endBufferTime > 0) && (
                         <div className="very-small text-muted mt-1">
@@ -1053,7 +1070,7 @@ const BookingModal = ({ onClose, selectedDate, skipToCalendar }) => {
                   {selectedDoctor.firstName} {selectedDoctor.lastName}
                 </div>
                 <div className="role text-muted small">
-                  {selectedDoctor.drSpeciality}
+                  {formatSpecialties(selectedDoctor.drSpeciality)}
                 </div>
                 {/* Buffer Info in Summary */}
                 {selectedDoctor && (selectedDoctor.startBufferTime > 0 || selectedDoctor.endBufferTime > 0) && (

@@ -36,7 +36,7 @@ const PreviousPrescriptions = ({ patient }) => {
         
         const filtered = Array.isArray(prescriptions)
           ? prescriptions.filter((prescription) => {
-              const appointmentDate = prescription.appointment_date || prescription.created_at;
+              const appointmentDate = prescription.created_at || prescription.appointment_date;
               if (!appointmentDate) return false;
               
               const appointmentDateObj = new Date(appointmentDate);

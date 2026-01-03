@@ -8,12 +8,45 @@ const PatientDetailsSidebar = React.memo(({ patient }) => {
     try {
       const dob = new Date(dateOfBirth);
       const today = new Date();
-      let age = today.getFullYear() - dob.getFullYear();
-      const monthDiff = today.getMonth() - dob.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-        age--;
+      
+      let years = today.getFullYear() - dob.getFullYear();
+      let months = today.getMonth() - dob.getMonth();
+      let days = today.getDate() - dob.getDate();
+      
+      // Adjust for negative days
+      if (days < 0) {
+        months--;
+        const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        days += lastMonth.getDate();
       }
-      return age;
+      
+      // Adjust for negative months
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+      
+      // If age is 1 year or more, show in years and months
+      if (years >= 1) {
+        const monthsText = months === 0 ? '' : months === 1 ? '1 month' : `${months} months`;
+        const yearsText = years === 1 ? '1 year' : `${years} years`;
+        return months === 0 ? yearsText : `${yearsText} ${monthsText}`;
+      }
+      
+      // If age is less than 1 year, show in months and days
+      const monthsText = months === 0 ? '' : months === 1 ? '1 month' : `${months} months`;
+      const daysText = days === 0 ? '' : days === 1 ? '1 day' : `${days} days`;
+      
+      if (months === 0 && days === 0) {
+        return '0 days';
+      }
+      if (months === 0) {
+        return daysText;
+      }
+      if (days === 0) {
+        return monthsText;
+      }
+      return `${monthsText} ${daysText}`;
     } catch (error) {
       return "N/A";
     }

@@ -11,7 +11,7 @@ const RootLayout = () => {
 
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <NavigationManu />
             <main className="nxl-container">
                 <div className="nxl-content">

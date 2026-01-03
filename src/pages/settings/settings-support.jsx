@@ -85,10 +85,10 @@ const SettingsSupport = () => {
                             </a>
                         </div>
                         <ul className="nav nav-tabs flex-wrap w-100 text-center customers-nav-tabs" id="myTab" role="tablist">
-                            <li className="nav-item flex-fill border-top" role="presentation">
+                            <li className="nav-item flex-fill" role="presentation">
                                 <button className={`nav-link${activeTab === 'overview' ? ' active' : ''}`} onClick={() => setActiveTab('overview')}>Support Form</button>
                             </li>
-                            <li className="nav-item flex-fill border-top" role="presentation">
+                            <li className="nav-item flex-fill" role="presentation">
                                 <button className={`nav-link${activeTab === 'recent' ? ' active' : ''}`} onClick={() => setActiveTab('recent')}>All Tickets</button>
                             </li>
                         </ul>

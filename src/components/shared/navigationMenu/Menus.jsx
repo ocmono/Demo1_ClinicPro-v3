@@ -276,7 +276,7 @@ const Menus = () => {
                                 }
                             }}
                         >
-                            <span className="nxl-micon"> {getIcon(icon)} </span>
+                            <span className="nxl-micon">{getIcon(icon)}</span>
                             <span className="nxl-mtext" style={{ paddingLeft: "2.5px" }}>
                                 {name}
                             </span>

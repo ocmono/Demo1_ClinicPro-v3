@@ -509,6 +509,10 @@
 .appointment-summary-card.vaccine .card-count {
   color: #6f42c1 !important;
 }
+.vaccine-card .appointment-id {
+  background: #f3f0ff;
+  color: #6f42c1;
+}
 .custom-modal-overlay {
   position: fixed;
   top: 0;

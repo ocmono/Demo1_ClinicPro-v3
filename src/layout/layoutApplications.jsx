@@ -37,7 +37,7 @@ const LayoutApplications = () => {
     }
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <NavigationManu />
             <main className={`nxl-container apps-container ${getClassName(pathName)}`}>
                 <div className="nxl-content without-header nxl-full-content">

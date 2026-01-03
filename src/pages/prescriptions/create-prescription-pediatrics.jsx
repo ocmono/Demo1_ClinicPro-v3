@@ -7,24 +7,22 @@ import PrescriptionsCreateDummy from '../../components/prescriptions/Prescriptio
 
 const PrescriptionCreatePediatrics = () => {
     const [timerKey, setTimerKey] = useState(0);
-    // const [activeComponent, setActiveComponent] = useState('B'); // default
+    const [activeComponent, setActiveComponent] = useState('B'); // default
 
-    // useEffect(() => {
-    //     const isColorTemplate = localStorage.getItem('isColorTemplate') === 'true';
-    //     if (isColorTemplate) {
-    //         setActiveComponent('A');
-    //     }
-    // }, []);
-
-    
+    useEffect(() => {
+        const isColorTemplate = localStorage.getItem('isColorTemplate') === 'true';
+        if (isColorTemplate) {
+            setActiveComponent('A');
+        }
+    }, []);
 
     const handleTimerReset = () => {
         setTimerKey(prev => prev + 1);
     };
 
-    // const handleSwitchComponent = () => {
-    //     setActiveComponent(prev => (prev === 'A' ? 'B' : 'A'));
-    // };
+    const handleSwitchComponent = () => {
+        setActiveComponent(prev => (prev === 'A' ? 'B' : 'A'));
+    };
 
     return (
         <>
@@ -32,18 +30,17 @@ const PrescriptionCreatePediatrics = () => {
                 <PrescriptionHeader
                     key={timerKey}
                     onTimerReset={handleTimerReset}
-                    // onSwitchComponent={handleSwitchComponent}
-                    // activeComponent={activeComponent} // optional (for label)
+                    onSwitchComponent={handleSwitchComponent}
+                    activeComponent={activeComponent} // optional (for label)
                 />
             </PageHeader>
 
             <div className="main-content">
-                {/* {activeComponent === 'A' ? (
+                {activeComponent === 'A' ? (
                     <PrescriptionCreation onResetTimer={handleTimerReset} />
                 ) : (
                     <PrescriptionsCreateDummy onResetTimer={handleTimerReset} showGrowthChart={true} />
-                )} */}
-                <PrescriptionsCreateDummy onResetTimer={handleTimerReset} showGrowthChart={true} />
+                )}
             </div>
 
             <Footer />

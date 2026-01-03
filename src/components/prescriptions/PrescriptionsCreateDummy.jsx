@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { FiInfo, FiX, FiTrendingUp, FiActivity, FiHeart, FiThermometer, FiCircle, FiRefreshCcw } from "react-icons/fi";
+import { FiInfo, FiX, FiTrendingUp, FiActivity, FiHeart, FiThermometer, FiCircle, FiRefreshCcw, FiRefreshCw } from "react-icons/fi";
 import { GrPowerReset } from "react-icons/gr";
 import { toast } from "react-toastify";
 import ReactSelect from "react-select";
@@ -21,7 +21,6 @@ const GrowthChart = React.lazy(() => import("./prescriptionDummy/GrowthChart"));
 const PatientDetailsSidebar = React.lazy(() => import("./prescriptionDummy/PatientDetailsSidebar"));
 const PreviousPrescriptions = React.lazy(() => import("./prescriptionDummy/previousPrescriptions"));
 
-
 // Context imports
 import { useBooking } from "../../contentApi/BookingProvider";
 import { usePrescription } from "../../contentApi/PrescriptionProvider";
@@ -31,6 +30,7 @@ import { useMedicines } from "../../context/MedicinesContext";
 import { useVaccine } from "../../context/VaccineContext";
 import { useTests } from "../../context/TestContext";
 import { useClinicManagement } from "../../contentApi/ClinicMnanagementProvider";
+
 
 // Custom debounce hook
 const useDebounce = (value, delay) => {
@@ -111,7 +111,17 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
     fetchTemplates,
     attachments,
     setAttachments,
+    fetchPatientsFromAppointments
   } = usePrescription();
+
+  const handleRefreshPatients = async () => {
+    try {
+      await fetchPatientsFromAppointments();
+      toast.success("Patient list refreshed");
+    } catch (error) {
+      console.error("Error Refreshing patients", error);
+    }
+  }
 
   const { medicines: contextMedicines, getMedicines: fetchContextMedicines } = useMedicines();
   const { vaccines: contextVaccines, getVaccines } = useVaccine();
@@ -120,6 +130,35 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
   const { doctors } = useBooking();
   const { user } = useAuth();
   const { clinicSpecialities } = useClinicManagement();
+  console.log(`UserID: ${user?.id}`);
+  // Filter doctor data for current user
+  const currentDoctor = doctors?.find((doc) => doc.id === user?.id);
+  console.log(`Current Doctor Data:`, currentDoctor);
+  // Get doctor's specialty array
+  const doctorSpeciality = currentDoctor?.drSpeciality;
+  console.log(`Doctor Speciality:`, doctorSpeciality);
+  
+  // Check if doctor has Paediatrician or paediatrics specialty
+  const hasPaediatricSpeciality = useMemo(() => {
+    if (!doctorSpeciality || !Array.isArray(doctorSpeciality)) return false;
+    return doctorSpeciality.some(speciality => {
+      const specialityLower = String(speciality).toLowerCase();
+      return specialityLower === 'pediatrician' || specialityLower === 'pediatrics' || specialityLower === 'paediatrics' || specialityLower === 'paediatrician';
+    });
+  }, [doctorSpeciality]);
+  
+  // Check if user is admin (super_admin or clinic_admin)
+  const isAdmin = useMemo(() => {
+    if (!user?.role) return false;
+    return ["super_admin", "clinic_admin"].includes(user.role);
+  }, [user?.role]);
+  
+  // Show growth chart if admin OR doctor with paediatric specialty
+  const shouldShowGrowthChart = useMemo(() => {
+    return isAdmin || hasPaediatricSpeciality;
+  }, [isAdmin, hasPaediatricSpeciality]);
+
+
 
   // ========== STATE VARIABLES ==========
   const [errors, setErrors] = useState({});
@@ -397,11 +436,53 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
       }));
   }, [appointments, isOwnAppointment]);
 
+  const getAllApprovedAppointments = useMemo(() => {
+    return appointments
+      .filter((appt) => {
+        const isApprovedAppointment =
+          appt.status === "approved" || appt.status === "done";
+        return isApprovedAppointment && isOwnAppointment(appt);
+      })
+      .map((appt) => ({
+        ...appt,
+        id: appt.patientId || appt.id,
+        patientId: appt.patientId,
+        patientName: appt.patientName,
+        patientEmail: appt.patientEmail,
+        patientPhone: appt.patientPhone,
+        patientAge: appt.patientAge,
+        appointment_date: appt.date,
+        appointment_time: appt.time,
+        doctor: appt.doctor,
+        doctorId: appt.doctorId,
+        status: appt.status,
+        appointmentId: appt.id,
+      }));
+  }, [appointments, isOwnAppointment]);
+
   const getFilteredPatients = useMemo(() => {
     if (patientFilter === "today") return getTodaysApprovedAppointments;
-    if (patientFilter === "all") return patients.filter((patient) => isOwnPatient(patient));
+    if (patientFilter === "all") {
+      // Combine regular patients and all appointment patients
+      const regularPatients = patients.filter((patient) => isOwnPatient(patient));
+      const appointmentPatients = getAllApprovedAppointments;
+      
+      // Combine both arrays
+      const combinedPatients = [...regularPatients, ...appointmentPatients];
+      
+      // Remove duplicates based on patient ID
+      const uniquePatientsMap = new Map();
+      combinedPatients.forEach((patient) => {
+        const patientId = patient.patientId || patient.id;
+        if (patientId && !uniquePatientsMap.has(patientId)) {
+          uniquePatientsMap.set(patientId, patient);
+        }
+      });
+      
+      return Array.from(uniquePatientsMap.values());
+    }
     return patients;
-  }, [patientFilter, getTodaysApprovedAppointments, patients, isOwnPatient]);
+  }, [patientFilter, getTodaysApprovedAppointments, getAllApprovedAppointments, patients, isOwnPatient]);
 
   const patientOptions = useMemo(() => getFilteredPatients.map((patient) => {  
     const patientId = patient.patientId || patient.id || "N/A";
@@ -431,7 +512,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
 
   // Memoized GrowthChart component
   const growthChartComponent = useMemo(() => {
-    if (!showGrowthChart || !patientForGrowthChart) return null;
+    if (!showGrowthChart || !shouldShowGrowthChart || !patientForGrowthChart) return null;
     
     return (
       <div className="px-3 mt-1 mb-2" ref={growthChartRef}>
@@ -444,7 +525,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
         </React.Suspense>
       </div>
     );
-  }, [showGrowthChart, patientForGrowthChart]);
+  }, [showGrowthChart, shouldShowGrowthChart, patientForGrowthChart]);
 
   // ========== HELPER FUNCTIONS ==========
   
@@ -919,7 +1000,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
     setLoadingSpecialties(true);
     try {
       const response = await fetch(
-        "https://bkdemo.clinicpro.cc/speciality/speciality-list"
+        "https://bkdemo1.clinicpro.cc/speciality/speciality-list"
       );
       if (!response.ok) throw new Error("Failed to fetch specialties");
       const data = await response.json();
@@ -1967,7 +2048,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
         <div className="col-xl-9 order-2 order-xl-2 d-flex">
           <div className="card w-100 h-100 invoice-container">
             <div className="card-header bg-light border-bottom">
-              <div className="col-md-6">
+              <div className="col-md-7">
                 <div className="input-group">
                   <div className="flex-grow-1">
                     <ReactSelect
@@ -1994,8 +2075,16 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
                       }
                     />
                   </div>
+                  <button
+                    type="button"
+                    onClick={handleRefreshPatients}
+                    className="btn d-flex align-items-center gap-2 rounded-pill px-3 py-1"
+                    title="Refresh patient list"
+                  >
+                    <FiRefreshCw size={14} />
+                  </button>
                   {/* Integrated Filter Toggle Button */}
-                  <div className="prescription-toggle-wrapper ms-2">
+                  <div className="prescription-toggle-wrapper">
                     <div className="prescription-toggle-bg d-flex align-items-center justify-content-between bg-gray-100 p-1 shadow-sm">
                       <button
                         ref={allFilterRef}
@@ -2034,8 +2123,6 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
     </option>
   ))}
 </select>
-
-
                 <button
                   type="button"
                   onClick={handleFullReset}
@@ -2049,7 +2136,9 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
 
             <div className="card-body p-0">
               {/* Vital Signs Section - Using debounced values */}
-              <div className="row px-3 mt-4 mb-4">
+
+              {showGrowthChart && shouldShowGrowthChart && (
+              <div className="row px-3 mt-4 ">
                 <VitalSignsInput
                   value={vitalSigns.weight}
                   onChange={handleVitalSignChange}
@@ -2066,7 +2155,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
                   unit="cm"
                   name="height"
                 />
-                {showGrowthChart && (
+               
                   <VitalSignsInput
                     value={vitalSigns.headCircumference}
                     onChange={handleVitalSignChange}
@@ -2075,7 +2164,7 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
                     unit="cm"
                     name="headCircumference"
                   />
-                )}
+                
                 <VitalSignsInput
                   value={vitalSigns.bp}
                   onChange={handleVitalSignChange}
@@ -2101,12 +2190,14 @@ const PrescriptionsCreateDummy = ({ onResetTimer, showGrowthChart = false }) => 
                   name="temperature"
                 />
               </div>
+              )}
+
 
               {/* Growth Chart Section - Memoized */}
               {growthChartComponent}
 
               {/* Symptoms Section */}
-              <div className="px-4 mt-2 mb-4">
+              <div className="px-4 my-4">
                 <React.Suspense fallback={<div>Loading symptoms section...</div>}>
                   <SymptomsSection
                     symptomsData={symptomsData}

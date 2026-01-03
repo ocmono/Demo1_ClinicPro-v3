@@ -8,7 +8,7 @@ const PrescriptionViewTabItems = ({ activeTab, setActiveTab }) => {
                     <i className="feather-align-left fs-20"></i>
                 </a>
             </div>
-            <div className="d-flex align-items-center justify-content-between" style={{ borderTop: "1px solid #e5e7eb" }}>
+            <div className="d-flex align-items-center justify-content-between">
                 <div className="nav-tabs-wrapper page-content-left-sidebar-wrapper">
                     <div className="d-flex d-md-none">
                         <a href="#" className="page-content-left-close-toggle">

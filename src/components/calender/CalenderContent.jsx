@@ -24,6 +24,12 @@ const STATUS_CONFIG = {
   rejected: { class: 'rejected', priority: 4 }
 };
 
+const VACCINE_STATUS_CONFIG = {
+  completed: { class: 'vaccine-completed', bgColor: '#10b981', priority: 1 },
+  overdue: { class: 'vaccine-overdue', bgColor: '#ef4444', priority: 2 },
+  scheduled: { class: 'vaccine-scheduled', bgColor: '#f59e0b', priority: 3 }
+};
+
 // Utility functions
 const normalizeDate = (dateStr) => {
   if (!dateStr) return '';
@@ -266,32 +272,51 @@ const CalenderContent = () => {
       )
       .join('');
 
-    const vaccineCount = (vaccineSchedules || []).filter(
+    const vaccinesForDate = (vaccineSchedules || []).filter(
       (v) => normalizeLocalDate(v.schedule_date) === formattedDate
-    ).length;
+    );
 
-    const vaccineCircle =
-      vaccineCount > 0
-        ? `<div class="status-circle vaccine">${vaccineCount}</div>`
-        : '';
+    const getVaccineDisplayStatus = (vaccine, todayDate) => {
+      if (vaccine.status === "completed") return "completed";
+
+      const scheduleDate = normalizeLocalDate(vaccine.schedule_date);
+      if (scheduleDate && scheduleDate < todayDate) return "overdue";
+
+      return "scheduled";
+    };
+
+    const vaccineStatusCount = vaccinesForDate.reduce(
+      (acc, v) => {
+        const status = getVaccineDisplayStatus(v, formattedDate);
+        acc[status]++;
+        return acc;
+      },
+      { scheduled: 0, overdue: 0, completed: 0 }
+    );
+    const vaccineBadgeHtml =
+      vaccinesForDate.length > 0
+        ? `
+        <div class="vaccine-badge vaccine-${
+        vaccineStatusCount.completed > 0
+          ? "completed"
+          : vaccineStatusCount.overdue > 0
+            ? "overdue"
+            : "scheduled"
+        }">
+          <span class="vaccine-icon">💉</span>
+          <span class="vaccine-count">${vaccinesForDate.length}</span>
+        </div>
+      `
+        : "";
 
     return {
       html: `
-        <div class="fc-daygrid-day-number">${args.dayNumberText}</div>
-        ${
-        vaccineCount > 0
-          ? `
-          <div class="vaccine-badge">
-            <span class="vaccine-icon">💉</span>
-            <span class="vaccine-count">${vaccineCount}</span>
-          </div>
-        `
-          : ''
-        }
-        <div class="appointment-status-circles">${appointmentCircles}</div>
-      `,
+      <div class="fc-daygrid-day-number">${args.dayNumberText}</div>
+      ${vaccineBadgeHtml}
+      <div class="appointment-status-circles">${appointmentCircles}</div>
+    `,
     };
-  }, [filteredAppointments, doneVisits]);
+  }, [filteredAppointments, doneVisits, vaccineSchedules]);
 
   // Day cell class names
   const dayCellClassNames = useCallback((arg) => {

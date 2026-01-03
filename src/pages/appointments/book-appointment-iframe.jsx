@@ -283,6 +283,23 @@ const AppointmentsBookIframe = () => {
     appointmentMode
   ]);
 
+  const formatSpecialties = (specialtyString) => {
+    if (!specialtyString) return '';
+
+    // If it's already a string with commas, split by comma and format
+    if (typeof specialtyString === 'string') {
+      // Split by comma, trim each part, and join with space
+      return specialtyString.split(',').map(s => s.trim()).join(' ');
+    }
+
+    // If it's an array, join with space
+    if (Array.isArray(specialtyString)) {
+      return specialtyString.join(' ');
+    }
+
+    return specialtyString;
+  };
+
   // Fetch all appointments when component mounts
   useEffect(() => {
     const loadAppointments = async () => {
@@ -312,29 +329,44 @@ const AppointmentsBookIframe = () => {
         setLocalDateSelected(null);
         setLocalTimeSlot("");
         setShowPatientForm(false);
+        setStep('apptType');
         break;
 
       case "treatmentReason":
-        setTreatmentReason("");
-        break;
-
-      case "doctor":
-        setAppointmentType("");
         setTreatmentReason("");
         setSelectedDoctor(null);
         setLocalDateSelected(null);
         setLocalTimeSlot("");
         setShowPatientForm(false);
+        setStep('treatmentReason');
+        break;
+
+      case "doctor":
+        setSelectedDoctor(null);
+        setLocalDateSelected(null);
+        setLocalTimeSlot("");
+        setShowPatientForm(false);
+        setStep('doctor');
         break;
 
       case "calendar":
         setLocalDateSelected(null);
         setLocalTimeSlot("");
         setShowPatientForm(false);
+        setStep('calendar');
         break;
 
       case "patientForm":
+        setFirstName('');
+        setLastName('');
+        setDob('');
+        setLocalPatientPhone('');
+        setLocalPatientEmail('');
+        setLocalPatientAge('');
+        setAgeType('years');
+        setErrors({});
         setShowPatientForm(false);
+        setStep('calendar');
         break;
 
       default:
@@ -556,7 +588,7 @@ const AppointmentsBookIframe = () => {
                       </div>
                     )}
                     <div className="name fw-semibold">{selectedDoctor.firstName} {selectedDoctor.lastName}</div>
-                    <div className="role text-muted small mb-0">{selectedDoctor.drSpeciality}</div>
+                    <div className="role text-muted small mb-0">{formatSpecialties(selectedDoctor.drSpeciality)}</div>
                     {selectedDoctor && (selectedDoctor.startBufferTime > 0 || selectedDoctor.endBufferTime > 0) && (
                       <div className="buffer-info mt-2 p-2 bg-light rounded small mb-2">
                         <FaInfoCircle className="text-info me-1" />
@@ -821,7 +853,7 @@ const AppointmentsBookIframe = () => {
                                         : 'text-muted'
                                         }`}
                                     >
-                                      {doc.specialty}
+                                      {formatSpecialties(doc.specialty)}
                                     </div>
                                   </div>
                                   {/* {(doc.startBufferTime > 0 || doc.endBufferTime > 0) && (

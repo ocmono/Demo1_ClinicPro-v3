@@ -401,20 +401,20 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/prescriptions/create-prescription",
-                element: <LazyComponent Component={PrescriptionCreate} />
-            },
-            {
-                path: "/prescriptions/create-prescription-pediatrics",
                 element: <LazyComponent Component={PrescriptionCreatePediatrics} />
             },
+            // {
+            //     path: "/prescriptions/create-prescription-pediatrics",
+            //     element: <LazyComponent Component={PrescriptionCreate} />
+            // },
             // {
             //     path: "/prescriptions/create-prescription-dermatologist",
             //     element: <LazyComponent Component={PrescriptionCreateDermatologist} />
             // },
-            {
-                path: "/prescriptions/create-prescription-simple",
-                element: <LazyComponent Component={PrescriptionCreateSimple} />
-            },
+            // {
+            //     path: "/prescriptions/create-prescription-simple",
+            //     element: <LazyComponent Component={PrescriptionCreateSimple} />
+            // },
             // {
             //     path: "/prescriptions/create-prescription-dummy",
             //     element: <LazyComponent Component={PrescriptionsCreateDummy} />
@@ -735,7 +735,11 @@ export const router = createBrowserRouter([
     },
     {
         path: "/",
-        element: <LayoutApplications />,
+        element: (
+            <ProtectedRoute>
+                <LayoutApplications />
+            </ProtectedRoute>
+        ),
         children: [
             {
                 path: "/calender",
@@ -773,7 +777,11 @@ export const router = createBrowserRouter([
     },
     {
         path: "/",
-        element: <LayoutSetting />,
+        element: (
+            <ProtectedRoute>
+                <LayoutSetting />
+            </ProtectedRoute>
+        ),
         children: [
             {
                 path: "/settings/clinic",
@@ -879,7 +887,9 @@ export const router = createBrowserRouter([
     },
     {
         path: "/",
-        element: <LayoutAuth />,
+        element: (
+            <LayoutAuth />
+        ),
         children: [
             {
                 path: "/",

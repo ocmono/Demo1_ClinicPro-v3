@@ -76,17 +76,17 @@ export const menuList = [
             //     subdropdownMenu: false,
             //     allowedRoles: ["super_admin", "clinic_admin", "doctor"]
             // },
+            // {
+            //     id: 3,
+            //     name: "Prescription Create",
+            //     path: "/prescriptions/create-prescription",
+            //     subdropdownMenu: false,
+            //     allowedRoles: ["super_admin", "clinic_admin", "doctor"]
+            // },
             {
                 id: 3,
-                name: "Prescription Create",
+                name: "Prescription Create ",
                 path: "/prescriptions/create-prescription",
-                subdropdownMenu: false,
-                allowedRoles: ["super_admin", "clinic_admin", "doctor"]
-            },
-            {
-                id: 5,
-                name: "Prescription Create (Pediatrics)",
-                path: "/prescriptions/create-prescription-pediatrics",
                 subdropdownMenu: false,
                 allowedRoles: ["super_admin", "clinic_admin", "doctor"]
             },

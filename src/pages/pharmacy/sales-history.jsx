@@ -519,7 +519,7 @@ const SalesHistory = () => {
                 <card.icon className="text-white fs-4" />
               </div>
               <div>
-                <div className={`text-${card.color} fs-3 fw-bold`}>{card.value}</div>
+                <div className={`text-${card.color} fs-5 fw-bold`}>{card.value}</div>
                 <div className="text-muted fw-semibold">{card.label}</div>
               </div>
             </div>

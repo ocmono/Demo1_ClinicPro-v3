@@ -10,6 +10,7 @@ import './AppointmentCalendar.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CustomDatePicker from "../shared/CustomCalendar";
+import { generateSortedTimeSlots } from "@/utils/generatedTimeSlots";
 
 const EditAppointmentModal = ({ appointment, onClose, onSave, initialSelectedDate }) => {
   const { doctors } = useBooking();
@@ -94,27 +95,52 @@ const EditAppointmentModal = ({ appointment, onClose, onSave, initialSelectedDat
     }).filter(doctor => doctor.value);
   }, [doctors]);
 
-  // Function to check if a date is within booking buffer range
-  const isDateWithinBookingBuffer = (date, doctor = selectedDoctor) => {
-    if (!doctor) return false;
+  const getSlotsForDate = (doctor, dateStr, mode) => {
+    if (!doctor || !dateStr) return [];
+
+    const dateObj = new Date(dateStr + "T00:00:00");
+
+    return generateSortedTimeSlots(
+      doctor,
+      dateObj,
+      allAppointmentsList,
+      mode
+    ).filter(slot => !slot.disabled);
+  };
+
+  const isDateWithinBookingBuffer = (dateStr, doctor) => {
+    if (!doctor || !dateStr) return false;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const selectedDate = new Date(date);
+    const selectedDate = new Date(dateStr);
     selectedDate.setHours(0, 0, 0, 0);
 
     const startBufferDays = doctor.startBufferTime || 0;
     const endBufferDays = doctor.endBufferTime || 365;
 
-    // Calculate the allowed booking range
-    const minBookingDate = addDays(today, startBufferDays);
-    const maxBookingDate = addDays(today, endBufferDays);
+    const minDate = new Date(today);
+    minDate.setDate(today.getDate() + startBufferDays);
 
-    minBookingDate.setHours(0, 0, 0, 0);
-    maxBookingDate.setHours(0, 0, 0, 0);
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + endBufferDays);
 
-    return selectedDate >= minBookingDate && selectedDate <= maxBookingDate;
+    minDate.setHours(0, 0, 0, 0);
+    maxDate.setHours(0, 0, 0, 0);
+
+    return selectedDate >= minDate && selectedDate <= maxDate;
+  };
+
+  const isDateSelectable = (doctor, dateStr, mode) => {
+    if (!doctor || !dateStr) return false;
+    if (!isDateWithinBookingBuffer(dateStr, doctor)) {
+      return false;
+    }
+    const slots = generateTimeSlots(doctor, dateStr, mode);
+    return slots.some(
+      slot => slot.available && slot.remainingSlots > 0
+    );
   };
 
   // Function to get buffer information for display
@@ -327,29 +353,6 @@ const EditAppointmentModal = ({ appointment, onClose, onSave, initialSelectedDat
     // Sort slots by time
     const sortedSlots = slots.sort((a, b) => a.value.localeCompare(b.value));
     return sortedSlots;
-  };
-
-  // Check if a specific date is available for a given doctor
-  const isDateAvailable = (dateString, doctor = selectedDoctor, mode = appointmentMode) => {
-    if (!doctor || !dateString || !doctor.availability) return false;
-
-    const jsDate = convertToJSDate(dateString);
-    const date = createLocalDate(jsDate);
-
-    if (!date) {
-      console.error('Invalid date for availability check:', dateString);
-      return false;
-    }
-
-    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-
-    const availableDays = doctor.availability
-      .filter(avail => !avail.closed && avail.startTime && avail.endTime && (mode === "video" ? avail.is_video_time : avail.is_clinic_time))
-      .map(avail => avail.day.toLowerCase());
-
-    const isAvailable = availableDays.includes(dayName);
-
-    return isAvailable;
   };
 
   // Function to convert time to HTML time input format (HH:MM)
@@ -730,8 +733,7 @@ const EditAppointmentModal = ({ appointment, onClose, onSave, initialSelectedDat
                             className="form-control-sm"
                             disabled={!selectedDoctor}
                             selectedDoctor={selectedDoctor}
-                            isDateAvailable={(dateStr) => isDateAvailable(dateStr, selectedDoctor, appointmentMode)}
-                            generateTimeSlots={(doctor, dateStr) => generateTimeSlots(doctor, dateStr, appointmentMode)}
+                            isDateAvailable={(dateStr) => isDateSelectable(selectedDoctor, dateStr, appointmentMode)}
                           />
 
                           {/* <div className="appointment-calendar">
